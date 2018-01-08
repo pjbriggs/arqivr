@@ -22,8 +22,6 @@ def compare(source,target):
     _print_list(diff.missing)
     print "%d additional objects" % len(diff.extra)
     _print_list(diff.extra)
-    print "%d uncheckable objects" % len(diff.uncheckable)
-    _print_list(diff.uncheckable)
     print "%d objects changed type" % len(diff.changed_type)
     _print_list(diff.changed_type)
     print "%d objects changed size" % len(diff.changed_size)
@@ -32,6 +30,10 @@ def compare(source,target):
     _print_list(diff.changed_link)
     print "%d objects changed time" % len(diff.changed_time)
     _print_list(diff.changed_time)
+    print "%d restricted objects (source)" % len(diff.restricted_source)
+    _print_list(diff.restricted_source)
+    print "%d restricted objects (target)" % len(diff.restricted_target)
+    _print_list(diff.restricted_target)
 
 def check_accessibility(dirn):
     """

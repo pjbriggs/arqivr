@@ -143,8 +143,6 @@ class ObjectIndex(object):
         self._objects[relpath] = FilesystemObject(path)
         self._names.append(relpath) # Use a set instead?
 
-
-
 def compare(src,tgt):
     """
     Compare two ObjectIndexes
@@ -154,52 +152,59 @@ def compare(src,tgt):
     "ObjectIndexComparison",
     ['missing',
      'extra',
-     'uncheckable',
+     'restricted_source',
+     'restricted_target',
      'changed_type',
      'changed_size',
      'changed_link',
      'changed_time',],)
     # Missing and modified objects
-    missing = []
-    changed_type = []
-    changed_size = []
-    changed_link = []
-    changed_time = []
-    uncheckable = []
+    missing = set()
+    changed_type = set()
+    changed_size = set()
+    changed_link = set()
+    changed_time = set()
+    restricted_src = set()
+    restricted_tgt = set()
     for name in src.names:
         src_obj = src[name]
         if not src_obj.isaccessible:
-            uncheckable.append(name)
+            restricted_src.add(name)
         if name not in tgt:
-            missing.append(name)
+            missing.add(name)
         else:
             tgt_obj = tgt[name]
             if not tgt_obj.isaccessible:
-                uncheckable.append(name)
+                restricted_tgt.add(name)
             elif src_obj.type != tgt_obj.type:
-                changed_type.append(name)
+                changed_type.add(name)
             else:
                 if src_obj.type == FilesystemObjectType.FILE:
                     if src_obj.size != tgt_obj.size:
-                        changed_size.append(name)
+                        changed_size.add(name)
                 elif src_obj.type == FilesystemObjectType.SYMLINK:
                     if src_obj.raw_symlink_target != tgt_obj.raw_symlink_target:
-                        changed_link.append(name)
+                        changed_link.add(name)
                 if src_obj.timestamp != tgt_obj.timestamp:
-                    changed_time.append(name)
+                    changed_time.add(name)
     # Extra objects
-    extra = []
+    extra = set()
     for name in tgt.names:
         if name not in src:
-            extra.append(name)
+            extra.add(name)
+        tgt_obj = tgt[name]
+        if not tgt_obj.isaccessible:
+            restricted_tgt.add(name)
     # Return the results
-    return ObjectIndexComparison(missing=missing,
-                                 extra=extra,
-                                 uncheckable=uncheckable,
-                                 changed_type=changed_type,
-                                 changed_size=changed_size,
-                                 changed_link=changed_link,
-                                 changed_time=changed_time)
+    return ObjectIndexComparison(
+        missing=sorted(list(missing)),
+        extra=sorted(list(extra)),
+        restricted_source=sorted(list(restricted_src)),
+        restricted_target=sorted(list(restricted_tgt)),
+        changed_type=sorted(list(changed_type)),
+        changed_size=sorted(list(changed_size)),
+        changed_link=sorted(list(changed_link)),
+        changed_time=sorted(list(changed_time)))
             
 def check_accessibility(indx):
     """
