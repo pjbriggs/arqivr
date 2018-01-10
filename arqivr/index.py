@@ -17,7 +17,8 @@ class FilesystemObjectType(object):
     FILE = 0
     DIRECTORY = 1
     SYMLINK = 2
-    UNKNOWN = 3
+    MISSING = 3
+    UNKNOWN = 4
 
 class FilesystemObject(object):
     """
@@ -26,7 +27,7 @@ class FilesystemObject(object):
     def __init__(self,path):
         """
         """
-        self.path = path
+        self.path = os.path.abspath(path)
         try:
             self._st = os.lstat(self.path)
         except OSError:
@@ -70,6 +71,8 @@ class FilesystemObject(object):
 
     @property
     def type(self):
+        if not self.exists:
+            return FilesystemObjectType.MISSING
         if self.isfile:
             return FilesystemObjectType.FILE
         elif self.isdir:
