@@ -6,6 +6,8 @@ import os
 import tempfile
 import shutil
 import time
+import getpass
+import grp
 from arqivr.index import FilesystemObjectType
 from arqivr.index import FilesystemObject
 from arqivr.index import FilesystemObjectIndex
@@ -89,6 +91,15 @@ class TestFilesystemObject(unittest.TestCase):
         self.assertEqual(FilesystemObject("test.txt").uid,
                          current_uid)
 
+    def test_username(self):
+        # Get username for current user
+        current_username = getpass.getuser()
+        # Make file
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObject("test.txt").username,
+                         current_username)
+
     def test_gid(self):
         # Get GID for current user
         current_gid = os.getgid()
@@ -97,6 +108,15 @@ class TestFilesystemObject(unittest.TestCase):
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").gid,
                          current_gid)
+
+    def test_groupname(self):
+        # Get group name for current user
+        current_groupname = grp.getgrgid(os.getgid()).gr_name
+        # Make file
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObject("test.txt").groupname,
+                         current_groupname)
 
     def test_islink(self):
         # Doesn't exist

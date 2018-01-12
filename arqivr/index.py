@@ -12,6 +12,8 @@ import os
 import stat
 import collections
 import hashlib
+import pwd
+import grp
 
 # Constants
 MD5_BLOCK_SIZE = 1024*1024
@@ -54,8 +56,24 @@ class FilesystemObject(object):
         return self._st.st_uid
 
     @property
+    def username(self):
+        uid = self.uid
+        try:
+            return pwd.getpwuid(int(uid)).pw_name
+        except (KeyError,ValueError,OverflowError):
+            return uid
+
+    @property
     def gid(self):
         return self._st.st_gid
+
+    @property
+    def groupname(self):
+        gid = self.gid
+        try:
+            return grp.getgrgid(int(gid)).gr_name
+        except (KeyError,ValueError,OverflowError):
+            return gid
     
     @property
     def islink(self):
