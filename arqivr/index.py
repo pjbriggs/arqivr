@@ -95,7 +95,7 @@ class FilesystemObject(object):
             return bool(st_mode & stat.S_IRGRP)
         return bool(st_mode & stat.S_IROTH)
 
-class ObjectIndex(object):
+class FilesystemObjectIndex(object):
     """
     Index of information about objects in a directory
     """
@@ -148,11 +148,11 @@ class ObjectIndex(object):
 
 def compare(src,tgt):
     """
-    Compare two ObjectIndexes
+    Compare two FilesystemObjectIndexes
     """
     # Define a named tuple to return the results with
-    ObjectIndexComparison = collections.namedtuple(
-    "ObjectIndexComparison",
+    FilesystemObjectIndexComparison = collections.namedtuple(
+    "FilesystemObjectIndexComparison",
     ['missing',
      'extra',
      'restricted_source',
@@ -199,7 +199,7 @@ def compare(src,tgt):
         if not tgt_obj.isaccessible:
             restricted_tgt.add(name)
     # Return the results
-    return ObjectIndexComparison(
+    return FilesystemObjectIndexComparison(
         missing=sorted(list(missing)),
         extra=sorted(list(extra)),
         restricted_source=sorted(list(restricted_src)),

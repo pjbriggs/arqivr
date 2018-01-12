@@ -8,7 +8,7 @@ import shutil
 import time
 from arqivr.index import FilesystemObjectType
 from arqivr.index import FilesystemObject
-from arqivr.index import ObjectIndex
+from arqivr.index import FilesystemObjectIndex
 from arqivr.index import compare
 from arqivr.index import check_accessibility
 
@@ -206,7 +206,7 @@ class TestFilesystemObject(unittest.TestCase):
         os.chmod("test.dir",0055)
         self.assertFalse(FilesystemObject("test.dir").isaccessible)
 
-class TestObjectIndex(unittest.TestCase):
+class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
         self.wd = tempfile.mkdtemp(suffix='TestObjectIndex')
@@ -218,7 +218,7 @@ class TestObjectIndex(unittest.TestCase):
         _remove_dir(self.wd)
 
     def test_empty_objectindex(self):
-        indx = ObjectIndex(self.wd)
+        indx = FilesystemObjectIndex(self.wd)
         self.assertEqual(indx.names,[])
         self.assertEqual(len(indx),0)
 
@@ -240,7 +240,7 @@ class TestObjectIndex(unittest.TestCase):
         for s in symlinks:
             os.symlink(symlinks[s],s)
         # Build the index
-        indx = ObjectIndex(self.wd)
+        indx = FilesystemObjectIndex(self.wd)
         indx.build()
         self.assertEqual(len(indx),8)
         # Check __contains__
@@ -309,10 +309,10 @@ class TestCompareFunction(unittest.TestCase):
 
     def test_compare_empty(self):
         os.mkdir("test1")
-        indx1 = ObjectIndex("test1")
+        indx1 = FilesystemObjectIndex("test1")
         indx1.build()
         os.mkdir("test2")
-        indx2 = ObjectIndex("test2")
+        indx2 = FilesystemObjectIndex("test2")
         indx2.build()
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,[])
@@ -328,9 +328,9 @@ class TestCompareFunction(unittest.TestCase):
         os.mkdir("test1")
         self._populate_dir("test1")
         self._copy_dir("test1","test2")
-        indx1 = ObjectIndex("test1")
+        indx1 = FilesystemObjectIndex("test1")
         indx1.build()
-        indx2 = ObjectIndex("test2")
+        indx2 = FilesystemObjectIndex("test2")
         indx2.build()
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,[])
@@ -357,8 +357,8 @@ class TestCompareFunction(unittest.TestCase):
         with open("test2/test2.dir/test.txt","w") as fp:
             fp.write("blah")
         # Build indexes
-        indx1 = ObjectIndex("test1")
-        indx2 = ObjectIndex("test2")
+        indx1 = FilesystemObjectIndex("test1")
+        indx2 = FilesystemObjectIndex("test2")
         indx1.build()
         indx2.build()
         # Do comparison
@@ -400,8 +400,8 @@ class TestCompareFunction(unittest.TestCase):
         os.remove("test2/test2.lnk")
         os.mkdir("test2/test2.lnk")
         # Build indexes
-        indx1 = ObjectIndex("test1")
-        indx2 = ObjectIndex("test2")
+        indx1 = FilesystemObjectIndex("test1")
+        indx2 = FilesystemObjectIndex("test2")
         indx1.build()
         indx2.build()
         # Do comparison
@@ -432,8 +432,8 @@ class TestCompareFunction(unittest.TestCase):
         os.remove("test2/test.lnk")
         os.symlink("test1.dir","test2/test.lnk")
         # Build indexes
-        indx1 = ObjectIndex("test1")
-        indx2 = ObjectIndex("test2")
+        indx1 = FilesystemObjectIndex("test1")
+        indx2 = FilesystemObjectIndex("test2")
         indx1.build()
         indx2.build()
         # Do comparison
@@ -458,8 +458,8 @@ class TestCompareFunction(unittest.TestCase):
         # Remove permissions on target subdir (restricted_target)
         os.chmod("test2/test2.dir",0055)
         # Build indexes
-        indx1 = ObjectIndex("test1")
-        indx2 = ObjectIndex("test2")
+        indx1 = FilesystemObjectIndex("test1")
+        indx2 = FilesystemObjectIndex("test2")
         indx1.build()
         indx2.build()
         # Do comparison
@@ -513,7 +513,7 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         os.mkdir("test")
         self._populate_dir("test")
         # Build index
-        indx = ObjectIndex("test")
+        indx = FilesystemObjectIndex("test")
         indx.build()
         self.assertEqual(check_accessibility(indx),[])
 
@@ -526,7 +526,7 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         # Remove permissions on file
         os.chmod("test/test2.dir/test.txt",0044)
         # Build index
-        indx = ObjectIndex("test")
+        indx = FilesystemObjectIndex("test")
         indx.build()
         self.assertEqual(check_accessibility(indx),
                          ["test1.dir",
