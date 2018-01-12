@@ -29,7 +29,7 @@ def _remove_dir(dirn):
 class TestFilesystemObject(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
-        self.wd = tempfile.mkdtemp(suffix='TestFilesystemObject')
+        self.wd = tempfile.mkdtemp(suffix=self.__class__.__name__)
         self.pwd = os.getcwd()
         os.chdir(self.wd)
 
@@ -209,7 +209,7 @@ class TestFilesystemObject(unittest.TestCase):
 class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
-        self.wd = tempfile.mkdtemp(suffix='TestObjectIndex')
+        self.wd = tempfile.mkdtemp(suffix=self.__class__.__name__)
         self.pwd = os.getcwd()
         os.chdir(self.wd)
 
@@ -270,7 +270,7 @@ class TestFilesystemObjectIndex(unittest.TestCase):
 class TestCompareFunction(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
-        self.wd = tempfile.mkdtemp(suffix='TestCompareFunction')
+        self.wd = tempfile.mkdtemp(suffix=self.__class__.__name__)
         self.pwd = os.getcwd()
         os.chdir(self.wd)
 
@@ -302,9 +302,8 @@ class TestCompareFunction(unittest.TestCase):
 
     def _copy_dir(self,src,tgt):
         # Copy directory tree and attributes
-        #shutil.copytree(src,tgt,symlinks=True)
-        #Would prefer to use shutil.copytree but this doesn't
-        #seem to preserve timestamps
+        # Would prefer to use shutil.copytree but this doesn't
+        # seem to preserve timestamps?
         os.system("cp -aR %s %s" % (src,tgt))
 
     def test_compare_empty(self):
@@ -478,7 +477,7 @@ class TestCompareFunction(unittest.TestCase):
 class TestCheckAccessibilityFunction(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
-        self.wd = tempfile.mkdtemp(suffix='TestAccessibilityFunction')
+        self.wd = tempfile.mkdtemp(suffix=self.__class__.__name__)
         self.pwd = os.getcwd()
         os.chdir(self.wd)
 
