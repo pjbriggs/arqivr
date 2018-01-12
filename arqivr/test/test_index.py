@@ -206,6 +206,13 @@ class TestFilesystemObject(unittest.TestCase):
         os.chmod("test.dir",0055)
         self.assertFalse(FilesystemObject("test.dir").isaccessible)
 
+    def test_md5sum(self):
+        # Make test filesystem objects
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObject("test.txt").md5sum,
+                         "098f6bcd4621d373cade4e832627b4f6")
+
 class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
@@ -317,6 +324,7 @@ class TestCompareFunction(unittest.TestCase):
         self.assertEqual(diff.restricted_target,[])
         self.assertEqual(diff.changed_type,[])
         self.assertEqual(diff.changed_size,[])
+        self.assertEqual(diff.changed_md5,[])
         self.assertEqual(diff.changed_link,[])
         self.assertEqual(diff.changed_time,[])
 
@@ -333,6 +341,7 @@ class TestCompareFunction(unittest.TestCase):
         self.assertEqual(diff.restricted_target,[])
         self.assertEqual(diff.changed_type,[])
         self.assertEqual(diff.changed_size,[])
+        self.assertEqual(diff.changed_md5,[])
         self.assertEqual(diff.changed_link,[])
         self.assertEqual(diff.changed_time,[])
 
@@ -347,7 +356,7 @@ class TestCompareFunction(unittest.TestCase):
         # Add a new file (extra)
         with open("test2/test2.dir/new.txt","w") as fp:
             fp.write("blah")
-        # Change content (changed_size)
+        # Change content (changed_size/changed_md5/changed_time)
         with open("test2/test2.dir/test.txt","w") as fp:
             fp.write("blah")
         # Build indexes
@@ -361,6 +370,7 @@ class TestCompareFunction(unittest.TestCase):
         self.assertEqual(diff.restricted_target,[])
         self.assertEqual(diff.changed_type,[])
         self.assertEqual(diff.changed_size,["test2.dir/test.txt"])
+        self.assertEqual(diff.changed_md5,["test2.dir/test.txt"])
         self.assertEqual(diff.changed_link,[])
         self.assertEqual(diff.changed_time,["test2.dir",
                                             "test2.dir/test.txt"])
@@ -409,6 +419,7 @@ class TestCompareFunction(unittest.TestCase):
                                             "test2.lnk",
                                             "test3.dir"])
         self.assertEqual(diff.changed_size,[])
+        self.assertEqual(diff.changed_md5,[])
         self.assertEqual(diff.changed_link,[])
         self.assertEqual(diff.changed_time,["test2.dir"])
 
@@ -432,6 +443,7 @@ class TestCompareFunction(unittest.TestCase):
         self.assertEqual(diff.restricted_target,[])
         self.assertEqual(diff.changed_type,[])
         self.assertEqual(diff.changed_size,[])
+        self.assertEqual(diff.changed_md5,[])
         self.assertEqual(diff.changed_link,["test.lnk"])
         self.assertEqual(diff.changed_time,["test.lnk"])
 
@@ -458,6 +470,7 @@ class TestCompareFunction(unittest.TestCase):
         self.assertEqual(diff.restricted_target,["test2.dir"])
         self.assertEqual(diff.changed_type,[])
         self.assertEqual(diff.changed_size,[])
+        self.assertEqual(diff.changed_md5,[])
         self.assertEqual(diff.changed_link,[])
         self.assertEqual(diff.changed_time,[])
 

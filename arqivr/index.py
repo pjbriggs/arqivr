@@ -11,6 +11,10 @@ Indexing classes and functions
 import os
 import stat
 import collections
+import hashlib
+
+# Constants
+MD5_BLOCK_SIZE = 1024*1024
 
 # File types
 class FilesystemObjectType(object):
@@ -95,6 +99,14 @@ class FilesystemObject(object):
             return bool(st_mode & stat.S_IRGRP)
         return bool(st_mode & stat.S_IROTH)
 
+    @property
+    def md5sum(self):
+        chksum = hashlib.md5()
+        with open(self.path,'rb') as f:
+            for block in iter(lambda: f.read(MD5_BLOCK_SIZE),''):
+                chksum.update(block)
+        return chksum.hexdigest()
+
 class FilesystemObjectIndex(object):
     """
     Index of information about objects in a directory
@@ -159,12 +171,14 @@ def compare(src,tgt):
      'restricted_target',
      'changed_type',
      'changed_size',
+     'changed_md5',
      'changed_link',
      'changed_time',],)
     # Missing and modified objects
     missing = set()
     changed_type = set()
     changed_size = set()
+    changed_md5 = set()
     changed_link = set()
     changed_time = set()
     restricted_src = set()
@@ -185,6 +199,8 @@ def compare(src,tgt):
                 if src_obj.type == FilesystemObjectType.FILE:
                     if src_obj.size != tgt_obj.size:
                         changed_size.add(name)
+                    if src_obj.md5sum != tgt_obj.md5sum:
+                        changed_md5.add(name)
                 elif src_obj.type == FilesystemObjectType.SYMLINK:
                     if src_obj.raw_symlink_target != tgt_obj.raw_symlink_target:
                         changed_link.add(name)
@@ -206,6 +222,7 @@ def compare(src,tgt):
         restricted_target=sorted(list(restricted_tgt)),
         changed_type=sorted(list(changed_type)),
         changed_size=sorted(list(changed_size)),
+        changed_md5=sorted(list(changed_md5)),
         changed_link=sorted(list(changed_link)),
         changed_time=sorted(list(changed_time)))
             
