@@ -41,8 +41,11 @@ def check_accessibility(dirn):
     """
     """
     indx = index.FilesystemObjectIndex(dirn)
-    objs = index.check_accessibility(indx)
-    print "%d inaccessible objects" % len(objs)
-    for obj in objs:
-        print "\t%s" % obj
-
+    inaccessible = index.check_accessibility(indx)
+    print "%d inaccessible objects" % len(inaccessible)
+    for name in inaccessible:
+        obj = indx[name]
+        print "\t%s %s:%s\t%s" % (obj.linux_permissions,
+                                  obj.username,
+                                  obj.groupname,
+                                  name)
