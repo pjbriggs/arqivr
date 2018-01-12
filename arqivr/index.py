@@ -107,6 +107,21 @@ class FilesystemObject(object):
                 chksum.update(block)
         return chksum.hexdigest()
 
+    @property
+    def linux_permissions(self):
+        st_mode = self._st.st_mode
+        perms = "%s%s%s%s%s%s%s%s%s" % \
+                (('r' if st_mode & stat.S_IRUSR else '-'),
+                 ('w' if st_mode & stat.S_IWUSR else '-'),
+                 ('x' if st_mode & stat.S_IXUSR else '-'),
+                 ('r' if st_mode & stat.S_IRGRP else '-'),
+                 ('w' if st_mode & stat.S_IWGRP else '-'),
+                 ('x' if st_mode & stat.S_IXGRP else '-'),
+                 ('r' if st_mode & stat.S_IROTH else '-'),
+                 ('w' if st_mode & stat.S_IWOTH else '-'),
+                 ('x' if st_mode & stat.S_IXOTH else '-'))
+        return perms
+
 class FilesystemObjectIndex(object):
     """
     Index of information about objects in a directory

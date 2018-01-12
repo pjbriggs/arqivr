@@ -213,6 +213,24 @@ class TestFilesystemObject(unittest.TestCase):
         self.assertEqual(FilesystemObject("test.txt").md5sum,
                          "098f6bcd4621d373cade4e832627b4f6")
 
+    def test_linux_permissions(self):
+        # Make test filesystem object
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        # Set permissions and test outputs
+        os.chmod("test.txt",0444)
+        self.assertEqual(FilesystemObject("test.txt").linux_permissions,
+                         "r--r--r--")
+        os.chmod("test.txt",0666)
+        self.assertEqual(FilesystemObject("test.txt").linux_permissions,
+                         "rw-rw-rw-")
+        os.chmod("test.txt",0750)
+        self.assertEqual(FilesystemObject("test.txt").linux_permissions,
+                         "rwxr-x---")
+        os.chmod("test.txt",0070)
+        self.assertEqual(FilesystemObject("test.txt").linux_permissions,
+                         "---rwx---")
+
 class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
