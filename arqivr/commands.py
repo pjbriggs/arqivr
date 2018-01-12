@@ -15,8 +15,8 @@ def _print_list(l):
 def compare(source,target):
     """
     """
-    source = index.FilesystemObjectIndex(source).build()
-    target = index.FilesystemObjectIndex(target).build()
+    source = index.FilesystemObjectIndex(source)
+    target = index.FilesystemObjectIndex(target)
     diff = index.compare(source,target)
     print "%d missing objects" % len(diff.missing)
     _print_list(diff.missing)
@@ -38,7 +38,7 @@ def compare(source,target):
 def check_accessibility(dirn):
     """
     """
-    indx = index.FilesystemObjectIndex(dirn).build()
+    indx = index.FilesystemObjectIndex(dirn)
     objs = index.check_accessibility(indx)
     print "%d inaccessible objects" % len(objs)
     for obj in objs:

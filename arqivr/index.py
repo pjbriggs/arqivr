@@ -105,6 +105,7 @@ class FilesystemObjectIndex(object):
         self._dirn = os.path.abspath(dirn)
         self._objects = {}
         self._names = []
+        self._build()
 
     def __len__(self):
         return len(self._objects)
@@ -122,7 +123,7 @@ class FilesystemObjectIndex(object):
         """
         return [x for x in self._names]
     
-    def build(self):
+    def _build(self):
         """
         Build index from filesystem
         """
@@ -133,7 +134,6 @@ class FilesystemObjectIndex(object):
             for f in d[2]:
                 self._add_object(d[0],f)
         print "Added %d objects" % len(self)
-        return self
 
     def _add_object(self,*args):
         """

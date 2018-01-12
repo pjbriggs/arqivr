@@ -241,7 +241,6 @@ class TestFilesystemObjectIndex(unittest.TestCase):
             os.symlink(symlinks[s],s)
         # Build the index
         indx = FilesystemObjectIndex(self.wd)
-        indx.build()
         self.assertEqual(len(indx),8)
         # Check __contains__
         for d in dirs:
@@ -309,10 +308,8 @@ class TestCompareFunction(unittest.TestCase):
     def test_compare_empty(self):
         os.mkdir("test1")
         indx1 = FilesystemObjectIndex("test1")
-        indx1.build()
         os.mkdir("test2")
         indx2 = FilesystemObjectIndex("test2")
-        indx2.build()
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,[])
         self.assertEqual(diff.extra,[])
@@ -328,9 +325,7 @@ class TestCompareFunction(unittest.TestCase):
         self._populate_dir("test1")
         self._copy_dir("test1","test2")
         indx1 = FilesystemObjectIndex("test1")
-        indx1.build()
         indx2 = FilesystemObjectIndex("test2")
-        indx2.build()
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,[])
         self.assertEqual(diff.extra,[])
@@ -358,8 +353,6 @@ class TestCompareFunction(unittest.TestCase):
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
         indx2 = FilesystemObjectIndex("test2")
-        indx1.build()
-        indx2.build()
         # Do comparison
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,["test.txt"])
@@ -401,8 +394,6 @@ class TestCompareFunction(unittest.TestCase):
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
         indx2 = FilesystemObjectIndex("test2")
-        indx1.build()
-        indx2.build()
         # Do comparison
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,["test1.dir/sub.dir",
@@ -433,8 +424,6 @@ class TestCompareFunction(unittest.TestCase):
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
         indx2 = FilesystemObjectIndex("test2")
-        indx1.build()
-        indx2.build()
         # Do comparison
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,[])
@@ -459,8 +448,6 @@ class TestCompareFunction(unittest.TestCase):
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
         indx2 = FilesystemObjectIndex("test2")
-        indx1.build()
-        indx2.build()
         # Do comparison
         diff = compare(indx1,indx2)
         self.assertEqual(diff.missing,["test2.dir/test.txt"])
@@ -513,7 +500,6 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         self._populate_dir("test")
         # Build index
         indx = FilesystemObjectIndex("test")
-        indx.build()
         self.assertEqual(check_accessibility(indx),[])
 
     def test_check_accessibility_with_restricted_objects(self):
@@ -526,7 +512,6 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         os.chmod("test/test2.dir/test.txt",0044)
         # Build index
         indx = FilesystemObjectIndex("test")
-        indx.build()
         self.assertEqual(check_accessibility(indx),
                          ["test1.dir",
                           "test2.dir/test.txt"])
