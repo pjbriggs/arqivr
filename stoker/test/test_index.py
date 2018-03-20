@@ -13,6 +13,7 @@ from stoker.index import FilesystemObject
 from stoker.index import FilesystemObjectIndex
 from stoker.index import compare
 from stoker.index import check_accessibility
+from stoker.index import find
 
 #
 # Helper functions
@@ -169,6 +170,20 @@ class TestFilesystemObject(unittest.TestCase):
         os.symlink("missing","missing.lnk")
         self.assertFalse(FilesystemObject("missing.lnk").isdir)
 
+    def test_iscompressed(self):
+        # Uncompressed file
+        with open("test.txt","w") as fp:
+            fp.write("uncompressed")
+        self.assertFalse(FilesystemObject("test.txt").iscompressed)
+        # Gzipped file
+        with gzip.open("test.txt.gz","w") as fp:
+            fp.write("gzipped")
+        self.assertTrue(FilesystemObject("test.txt.gz").iscompressed)
+        # Bzipped2 file
+        with bz2.BZ2File("test.txt.bz2","w") as fp:
+            fp.write("bzipped2")
+        self.assertTrue(FilesystemObject("test.txt.bz2").iscompressed)
+
     def test_type(self):
         # Doesn't exist
         self.assertEqual(FilesystemObject("test").type,
@@ -250,6 +265,25 @@ class TestFilesystemObject(unittest.TestCase):
         os.chmod("test.txt",0070)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "---rwx---")
+
+    def test_extension(self):
+        # Make test filesystem objects
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        with open("test.txt.gz","w") as fp:
+            fp.write("test")
+        with open("test.txt.filtered.gz.1","w") as fp:
+            fp.write("test")
+        with open("test","w") as fp:
+            fp.write("test")
+        # Check extensions
+        self.assertEqual(FilesystemObject("test.txt").extension,
+                         "txt")
+        self.assertEqual(FilesystemObject("test.txt.gz").extension,
+                         "txt.gz")
+        self.assertEqual(FilesystemObject("test.txt.filtered.gz.1").extension,
+                         "txt.filtered.gz.1")
+        self.assertEqual(FilesystemObject("test").extension,"")
 
 class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
@@ -566,3 +600,85 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         self.assertEqual(check_accessibility(indx),
                          ["test1.dir",
                           "test2.dir/test.txt"])
+
+class TestFindFunction(unittest.TestCase):
+    def setUp(self):
+        # Create a temp working dir
+        self.wd = tempfile.mkdtemp(suffix=self.__class__.__name__)
+        self.pwd = os.getcwd()
+        os.chdir(self.wd)
+
+    def tearDown(self):
+        os.chdir(self.pwd)
+        _remove_dir(self.wd)
+
+    def _populate_dir(self,dirn):
+        # Add some objects to current dir
+        dirs = ("fastqs",
+                "analysis",
+                "analysis/fastqs",
+                "analysis/trimming",
+                "analysis/mapping",)
+        files = ("README.txt",
+                 "fastqs/PJB_S1_R1_001.fastq.gz",
+                 "fastqs/PJB_S1_R2_001.fastq.gz",
+                 "analysis/trimming/PJB_R1.trimmed.fastq",
+                 "analysis/trimming/PJB_R2.trimmed.fastq",
+                 "analysis/mapping/PJB.trimmed.bam",
+                 "analysis/mapping/PJB.trimmed.sam")
+        symlinks = {
+            "analysis/fastqs/PJB_R1.fastq": "fastqs/PJB_S1_R1_001.fastq.gz",
+            "analysis/fastqs/PJB_R2.fastq": "fastqs/PJB_S1_R2_001.fastq.gz"
+        }
+        for d in dirs:
+            os.mkdir(os.path.join(dirn,d))
+        for f in files:
+            with open(os.path.join(dirn,f),"w") as fp:
+                fp.write("blah\n")
+        for s in symlinks:
+            os.symlink(symlinks[s],os.path.join(dirn,s))
+        return (dirs,files,symlinks)
+
+    def test_find_no_conditions(self):
+        # Make reference directory
+        os.mkdir("test")
+        self._populate_dir("test")
+        # Build index
+        indx = FilesystemObjectIndex("test")
+        self.assertEqual(len(find(indx)),0)
+
+    def test_find_one_extension(self):
+        # Make reference directory
+        os.mkdir("test")
+        self._populate_dir("test")
+        # Build index
+        indx = FilesystemObjectIndex("test")
+        self.assertEqual(find(indx,exts="fastq"),
+                         ["analysis/fastqs/PJB_R1.fastq",
+                          "analysis/fastqs/PJB_R2.fastq",
+                          "analysis/trimming/PJB_R1.trimmed.fastq",
+                          "analysis/trimming/PJB_R2.trimmed.fastq",
+                          "fastqs/PJB_S1_R1_001.fastq.gz",
+                          "fastqs/PJB_S1_R2_001.fastq.gz"])
+
+    def test_find_multiple_extensions(self):
+        # Make reference directory
+        os.mkdir("test")
+        self._populate_dir("test")
+        # Build index
+        indx = FilesystemObjectIndex("test")
+        self.assertEqual(find(indx,exts="sam,bam"),
+                         ["analysis/mapping/PJB.trimmed.bam",
+                          "analysis/mapping/PJB.trimmed.sam"])
+
+    def test_find_no_compressed_files(self):
+        # Make reference directory
+        os.mkdir("test")
+        self._populate_dir("test")
+        # Build index
+        indx = FilesystemObjectIndex("test")
+        self.assertEqual(find(indx,exts="fastq",nocompressed=True),
+                         ["analysis/fastqs/PJB_R1.fastq",
+                          "analysis/fastqs/PJB_R2.fastq",
+                          "analysis/trimming/PJB_R1.trimmed.fastq",
+                          "analysis/trimming/PJB_R2.trimmed.fastq"])
