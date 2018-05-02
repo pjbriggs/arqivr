@@ -1,6 +1,6 @@
 #!/bin/env python
 #
-# Unit tests for the arqivr index module
+# Unit tests for the stoker index module
 import unittest
 import os
 import tempfile
@@ -8,11 +8,11 @@ import shutil
 import time
 import getpass
 import grp
-from arqivr.index import FilesystemObjectType
-from arqivr.index import FilesystemObject
-from arqivr.index import FilesystemObjectIndex
-from arqivr.index import compare
-from arqivr.index import check_accessibility
+from stoker.index import FilesystemObjectType
+from stoker.index import FilesystemObject
+from stoker.index import FilesystemObjectIndex
+from stoker.index import compare
+from stoker.index import check_accessibility
 
 #
 # Helper functions
