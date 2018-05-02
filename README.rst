@@ -1,5 +1,5 @@
-arqivr: exploration/curation NGS data
-=====================================
+stoker: exploration/curation of NGS data
+========================================
 
 Utility to help with managing copies of directories containing NGS data and
 analyses, developed within the Bioinformatics Core Facility (BCF) at the
@@ -8,7 +8,7 @@ University of Manchester (UoM).
 Overview
 ********
 
-``arqivr`` provides a single utility of the same name, which has a number of
+``stoker`` provides a single utility of the same name, which has a number of
 subcommands:
 
  * ``compare``: compares one directory against another, looking for missing,
@@ -32,7 +32,7 @@ directory to your ``PYTHONPATH`` environment.
 
 To install directly from github using ``pip``::
 
-    pip install git+https://github.com/pjbriggs/arqivr.git
+    pip install git+https://github.com/pjbriggs/stoker.git
 
 Documentation
 *************

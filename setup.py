@@ -1,6 +1,6 @@
 """Description
 
-Setup script to install arqivr package
+Setup script to install 'stoker' package
 
 Copyright (C) University of Manchester 2018 Peter Briggs
 
@@ -8,19 +8,19 @@ Copyright (C) University of Manchester 2018 Peter Briggs
 
 # Setup for installation etc
 from setuptools import setup
-import arqivr
+import stoker
 setup(
-    name = "arqivr",
-    version = arqivr.get_version(),
+    name = "stoker",
+    version = stoker.get_version(),
     description = 'Utility for curation of NGS data',
     long_description = """Utility to help examine and archive NGS data from
 SOLiD and Illumina sequencing platforms""",
-    url = 'https://github.com/pjbriggs/arqivr',
+    url = 'https://github.com/pjbriggs/stoker',
     maintainer = 'Peter Briggs',
     maintainer_email = 'peter.briggs@manchester.ac.uk',
-    packages = ['arqivr'],
+    packages = ['stoker'],
     entry_points = { 'console_scripts':
-                     ['arqivr = arqivr.cli:main',]
+                     ['stoker = stoker.cli:main',]
                  },
     license = 'MIT',
     # Pull in dependencies
