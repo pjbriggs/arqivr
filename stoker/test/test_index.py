@@ -504,6 +504,8 @@ class TestCompareFunction(unittest.TestCase):
         # Make directory to compare
         self._copy_dir("test1","test2")
         # Change link target (changed_link)
+        # Small delay to ensure time is different
+        time.sleep(.01)
         os.remove("test2/test.lnk")
         os.symlink("test1.dir","test2/test.lnk")
         # Build indexes
