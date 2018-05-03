@@ -140,6 +140,14 @@ class FilesystemObject(object):
                  ('x' if st_mode & stat.S_IXOTH else '-'))
         return perms
 
+    @property
+    def extension(self):
+        return '.'.join(os.path.basename(self.path).split('.')[1:])
+
+    @property
+    def iscompressed(self):
+        return (self.path.split('.')[-1] in ('gz','bz2'))
+
 class FilesystemObjectIndex(object):
     """
     Index of information about objects in a directory
@@ -269,3 +277,22 @@ def check_accessibility(indx):
         if not obj.isaccessible:
             inaccessible.append(name)
     return inaccessible
+
+def find(indx,exts=None,nocompressed=False):
+    """
+    Find matching objects in an ObjectIndex
+    """
+    matches = []
+    if exts is not None:
+        exts = [x.strip('.') for x in exts.split(',')]
+    else:
+        exts = list()
+    for name in indx.names:
+        obj = indx[name]
+        if nocompressed and obj.iscompressed:
+            continue
+        for ext in exts:
+            if ext in obj.extension.split('.'):
+                matches.append(name)
+                break
+    return sorted(matches)

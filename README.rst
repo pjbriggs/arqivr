@@ -17,6 +17,8 @@ subcommands:
  * ``check_access``: checks the accessibility of a directory for the current
    user and identifies objects which are not accessible due to file system
    permissions
+ * ``find``: reports objects matching specified criteria (e.g. file
+   extensions)
 
 Installation
 ************

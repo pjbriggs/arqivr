@@ -27,6 +27,14 @@ def main(args=None):
     access_parser = subparsers.add_parser("check_access",
                                        help="check accessibility")
     access_parser.add_argument("dir",default=None)
+
+    # 'find' command
+    find_parser = subparsers.add_parser("find",
+                                        help="search for files")
+    find_parser.add_argument("dir",default=None)
+    find_parser.add_argument("-e","--exts",dest='extensions',
+                             default=None)
+    find_parser.add_argument("--nocompressed",action='store_true')
     
     # Process the command line
     args = parser.parse_args()
@@ -39,5 +47,11 @@ def main(args=None):
     # Accessibility
     if args.command == "check_access":
         commands.check_accessibility(args.dir)
+
+    # Find
+    if args.command == "find":
+        commands.find(args.dir,
+                      exts=args.extensions,
+                      nocompressed=args.nocompressed)
 
 
