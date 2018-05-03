@@ -8,6 +8,7 @@ import shutil
 import time
 import getpass
 import grp
+import gzip
 from stoker.index import FilesystemObjectType
 from stoker.index import FilesystemObject
 from stoker.index import FilesystemObjectIndex
