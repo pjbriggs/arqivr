@@ -4,6 +4,7 @@
 #     Copyright (C) University of Manchester 2018 Peter Briggs
 #
 
+import os
 import index
 
 def _print_list(l):
@@ -50,7 +51,7 @@ def check_accessibility(dirn):
                                   obj.groupname,
                                   name)
 
-def find(dirn,exts=None,nocompressed=False):
+def find(dirn,exts=None,nocompressed=False,full_paths=False):
     """
     """
     indx = index.FilesystemObjectIndex(dirn)
@@ -58,6 +59,11 @@ def find(dirn,exts=None,nocompressed=False):
     print "%d matching objects" % len(matches)
     for name in matches:
         obj = indx[name]
-        print "\t%s%s" % (name,
-                          (" -> %s" % obj.raw_symlink_target)
-                          if obj.islink else "")
+        if full_paths:
+            path = os.path.join(dirn,name)
+        else:
+            path = name
+        path = os.path.abspath(path)
+        print "%s%s" % (path,
+                        (" -> %s" % obj.raw_symlink_target)
+                        if obj.islink else "")
