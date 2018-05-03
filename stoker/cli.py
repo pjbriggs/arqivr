@@ -4,6 +4,7 @@
 #     Copyright (C) University of Manchester 2018 Peter Briggs
 #
 import argparse
+import getpass
 import commands
 import index
 
@@ -36,6 +37,7 @@ def main(args=None):
                              default=None)
     find_parser.add_argument("-u","--users",dest='users',
                              default=None)
+    find_parser.add_argument("-m","--mine",action='store_true')
     find_parser.add_argument("--nocompressed",action='store_true')
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
@@ -55,9 +57,13 @@ def main(args=None):
 
     # Find
     if args.command == "find":
+        if args.mine:
+            users = getpass.getuser()
+        else:
+            users = args.users
         commands.find(args.dir,
                       exts=args.extensions,
-                      users=args.users,
+                      users=users,
                       nocompressed=args.nocompressed,
                       full_paths=args.full_paths)
 
