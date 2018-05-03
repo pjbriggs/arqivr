@@ -58,6 +58,6 @@ def find(dirn,exts=None,nocompressed=False):
     print "%d matching objects" % len(matches)
     for name in matches:
         obj = indx[name]
-        print "\t%s%s" % (name,
-                          (" -> %s" % obj.raw_symlink_target)
-                          if obj.islink else "")
+        print "%s%s" % (name,
+                        (" -> %s" % obj.raw_symlink_target)
+                        if obj.islink else "")
