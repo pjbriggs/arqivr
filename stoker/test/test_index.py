@@ -431,6 +431,7 @@ class TestCompareFunction(unittest.TestCase):
         with open("test2/test2.dir/new.txt","w") as fp:
             fp.write("blah")
         # Change content (changed_size/changed_md5/changed_time)
+        time.sleep(.01)
         with open("test2/test2.dir/test.txt","w") as fp:
             fp.write("blah")
         # Build indexes
