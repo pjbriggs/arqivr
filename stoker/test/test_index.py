@@ -9,6 +9,7 @@ import time
 import getpass
 import grp
 import gzip
+import bz2
 from stoker.index import FilesystemObjectType
 from stoker.index import FilesystemObject
 from stoker.index import FilesystemObjectIndex
