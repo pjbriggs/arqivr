@@ -4,6 +4,7 @@
 #     Copyright (C) University of Manchester 2018 Peter Briggs
 #
 import argparse
+import getpass
 import commands
 import index
 
@@ -31,10 +32,26 @@ def main(args=None):
     # 'find' command
     find_parser = subparsers.add_parser("find",
                                         help="search for files")
-    find_parser.add_argument("dir",default=None)
+    find_parser.add_argument("dir",default=None,
+                             help="directory to search")
     find_parser.add_argument("-e","--exts",dest='extensions',
-                             default=None)
-    find_parser.add_argument("--nocompressed",action='store_true')
+                             default=None,
+                             help="list of file extensions "
+                             "separated by commas; only include "
+                             "objects which have one of the "
+                             "listed extensions")
+    find_parser.add_argument("-u","--users",dest='users',
+                             default=None,
+                             help="list of one or more user names "
+                             "separated by commas; only include "
+                             "objects owned by one of the listed "
+                             "users")
+    find_parser.add_argument("-m","--mine",action='store_true',
+                             help="only include objects which are "
+                             "owned by the current user (overrides "
+                             "--users)")
+    find_parser.add_argument("--nocompressed",action='store_true',
+                             help="don't include compressed objects")
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
                              "objects")
@@ -53,8 +70,13 @@ def main(args=None):
 
     # Find
     if args.command == "find":
+        if args.mine:
+            users = getpass.getuser()
+        else:
+            users = args.users
         commands.find(args.dir,
                       exts=args.extensions,
+                      users=users,
                       nocompressed=args.nocompressed,
                       full_paths=args.full_paths)
 

@@ -51,11 +51,13 @@ def check_accessibility(dirn):
                                   obj.groupname,
                                   name)
 
-def find(dirn,exts=None,nocompressed=False,full_paths=False):
+def find(dirn,exts=None,users=None,nocompressed=False,
+         full_paths=False):
     """
     """
     indx = index.FilesystemObjectIndex(dirn)
-    matches = index.find(indx,exts=exts,nocompressed=nocompressed)
+    matches = index.find(indx,exts=exts,users=users,
+                         nocompressed=nocompressed)
     print "%d matching objects" % len(matches)
     for name in matches:
         obj = indx[name]

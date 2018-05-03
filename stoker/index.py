@@ -278,21 +278,28 @@ def check_accessibility(indx):
             inaccessible.append(name)
     return inaccessible
 
-def find(indx,exts=None,nocompressed=False):
+def find(indx,exts=None,users=None,nocompressed=False):
     """
     Find matching objects in an ObjectIndex
     """
-    matches = []
+    matches = list()
+    if exts is None and users is None:
+        return matches
     if exts is not None:
         exts = [x.strip('.') for x in exts.split(',')]
+        for name in indx.names:
+            obj = indx[name]
+            for ext in exts:
+                if ext in obj.extension.split('.'):
+                    matches.append(name)
+                    break
     else:
-        exts = list()
-    for name in indx.names:
-        obj = indx[name]
-        if nocompressed and obj.iscompressed:
-            continue
-        for ext in exts:
-            if ext in obj.extension.split('.'):
-                matches.append(name)
-                break
+        matches = indx.names
+    if users is not None:
+        users = [x for x in users.split(',')]
+        matches = filter(lambda x: indx[x].username in users,
+                         matches)
+    if nocompressed:
+        matches = filter(lambda x: not indx[x].iscompressed,
+                         matches)
     return sorted(matches)
