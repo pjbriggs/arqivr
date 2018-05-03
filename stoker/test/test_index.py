@@ -687,3 +687,33 @@ class TestFindFunction(unittest.TestCase):
                           "analysis/fastqs/PJB_R2.fastq",
                           "analysis/trimming/PJB_R1.trimmed.fastq",
                           "analysis/trimming/PJB_R2.trimmed.fastq"])
+
+    def test_find_owned_by_users(self):
+        # Make reference directory
+        os.mkdir("test")
+        self._populate_dir("test")
+        # Build index
+        indx = FilesystemObjectIndex("test")
+        # Find files owned by current user
+        current_username = getpass.getuser()
+        self.assertEqual(find(indx,exts="fastq",
+                              users=current_username),
+                         ["analysis/fastqs/PJB_R1.fastq",
+                          "analysis/fastqs/PJB_R2.fastq",
+                          "analysis/trimming/PJB_R1.trimmed.fastq",
+                          "analysis/trimming/PJB_R2.trimmed.fastq",
+                          "fastqs/PJB_S1_R1_001.fastq.gz",
+                          "fastqs/PJB_S1_R2_001.fastq.gz"])
+        # Find files owned by different user
+        self.assertEqual(find(indx,exts="fastq",
+                              users="non_existent_user0123"),[])
+        # Find files owned by multiple users
+        self.assertEqual(find(indx,exts="fastq",
+                              users=",".join((current_username,
+                                              "non_existent_user0123"))),
+                         ["analysis/fastqs/PJB_R1.fastq",
+                          "analysis/fastqs/PJB_R2.fastq",
+                          "analysis/trimming/PJB_R1.trimmed.fastq",
+                          "analysis/trimming/PJB_R2.trimmed.fastq",
+                          "fastqs/PJB_S1_R1_001.fastq.gz",
+                          "fastqs/PJB_S1_R2_001.fastq.gz"])

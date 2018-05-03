@@ -34,6 +34,8 @@ def main(args=None):
     find_parser.add_argument("dir",default=None)
     find_parser.add_argument("-e","--exts",dest='extensions',
                              default=None)
+    find_parser.add_argument("-u","--users",dest='users',
+                             default=None)
     find_parser.add_argument("--nocompressed",action='store_true')
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
@@ -55,6 +57,7 @@ def main(args=None):
     if args.command == "find":
         commands.find(args.dir,
                       exts=args.extensions,
+                      users=args.users,
                       nocompressed=args.nocompressed,
                       full_paths=args.full_paths)
 
