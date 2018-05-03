@@ -8,6 +8,8 @@ import shutil
 import time
 import getpass
 import grp
+import gzip
+import bz2
 from stoker.index import FilesystemObjectType
 from stoker.index import FilesystemObject
 from stoker.index import FilesystemObjectIndex
@@ -502,6 +504,8 @@ class TestCompareFunction(unittest.TestCase):
         # Make directory to compare
         self._copy_dir("test1","test2")
         # Change link target (changed_link)
+        # Small delay to ensure time is different
+        time.sleep(.01)
         os.remove("test2/test.lnk")
         os.symlink("test1.dir","test2/test.lnk")
         # Build indexes
