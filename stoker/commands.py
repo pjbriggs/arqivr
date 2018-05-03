@@ -60,10 +60,9 @@ def find(dirn,exts=None,nocompressed=False,full_paths=False):
     for name in matches:
         obj = indx[name]
         if full_paths:
-            path = os.path.join(dirn,name)
+            path = os.path.abspath(os.path.join(dirn,name))
         else:
             path = name
-        path = os.path.abspath(path)
         print "%s%s" % (path,
                         (" -> %s" % obj.raw_symlink_target)
                         if obj.islink else "")
