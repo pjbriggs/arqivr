@@ -276,6 +276,8 @@ class TestFilesystemObject(unittest.TestCase):
             fp.write("test")
         with open("test.txt.filtered.gz.1","w") as fp:
             fp.write("test")
+        with open("test.gz","w") as fp:
+            fp.write("test")
         with open("test","w") as fp:
             fp.write("test")
         # Check extensions
@@ -285,7 +287,30 @@ class TestFilesystemObject(unittest.TestCase):
                          "txt.gz")
         self.assertEqual(FilesystemObject("test.txt.filtered.gz.1").extension,
                          "txt.filtered.gz.1")
+        self.assertEqual(FilesystemObject("test.gz").extension,"gz")
         self.assertEqual(FilesystemObject("test").extension,"")
+
+    def test_type_extension(self):
+        # Make test filesystem objects
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        with open("test.txt.gz","w") as fp:
+            fp.write("test")
+        with open("test.txt.filtered.gz.1","w") as fp:
+            fp.write("test")
+        with open("test.gz","w") as fp:
+            fp.write("test")
+        with open("test","w") as fp:
+            fp.write("test")
+        # Check type extensions
+        self.assertEqual(FilesystemObject("test.txt").type_extension,
+                         "txt")
+        self.assertEqual(FilesystemObject("test.txt.gz").type_extension,
+                         "txt")
+        self.assertEqual(FilesystemObject("test.txt.filtered.gz.1").type_extension,
+                         "1")
+        self.assertEqual(FilesystemObject("test.gz").type_extension,"")
+        self.assertEqual(FilesystemObject("test").type_extension,"")
 
 class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
