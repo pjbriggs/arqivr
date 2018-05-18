@@ -110,6 +110,13 @@ class FilesystemObject(object):
         return os.readlink(self.path)
 
     @property
+    def ishidden(self):
+        for ele in self.path.split(os.sep):
+            if ele.startswith('.'):
+                return True
+        return False
+
+    @property
     def isaccessible(self):
         st_mode = self._st.st_mode
         if self.uid == os.getuid():
@@ -289,12 +296,16 @@ def check_accessibility(indx):
             inaccessible.append(name)
     return inaccessible
 
-def find(indx,exts=None,users=None,size=None,nocompressed=False):
+def find(indx,exts=None,users=None,size=None,only_hidden=False,
+         nocompressed=False):
     """
     Find matching objects in an ObjectIndex
     """
     matches = list()
-    if exts is None and users is None and size is None:
+    if exts is None and \
+       users is None and \
+       size is None and \
+       only_hidden is False:
         return matches
     if exts is not None:
         exts = [x.strip('.') for x in exts.split(',')]
@@ -312,6 +323,9 @@ def find(indx,exts=None,users=None,size=None,nocompressed=False):
                          matches)
     if size is not None:
         matches = filter(lambda x: indx[x].isfile and indx[x].size >= size,
+                         matches)
+    if only_hidden:
+        matches = filter(lambda x: indx[x].ishidden,
                          matches)
     if nocompressed:
         matches = filter(lambda x: not indx[x].iscompressed,
