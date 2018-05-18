@@ -52,7 +52,7 @@ def check_accessibility(dirn):
                                   name)
 
 def find(dirn,exts=None,users=None,size=None,nocompressed=False,
-         full_paths=False):
+         long_listing=False,full_paths=False):
     """
     """
     indx = index.FilesystemObjectIndex(dirn)
@@ -65,6 +65,11 @@ def find(dirn,exts=None,users=None,size=None,nocompressed=False,
             path = os.path.abspath(os.path.join(dirn,name))
         else:
             path = name
-        print "%s%s" % (path,
+        output = "%s%s" % (path,
                         (" -> %s" % obj.raw_symlink_target)
                         if obj.islink else "")
+        if long_listing:
+            output = "%s %s %s" % (obj.username,
+                                   obj.size,
+                                   output)
+        print output
