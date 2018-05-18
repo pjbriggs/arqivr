@@ -47,6 +47,9 @@ def main(args=None):
                              "must be either: a number of bytes, "
                              "or an integer followed by 'K' (1024 "
                              "bytes), 'M' (1024K), or 'G' (1024M)")
+    find_parser.add_argument("--only_hidden",action='store_true',
+                             dest='only_hidden',
+                             help="only report 'hidden' objects")
     find_parser.add_argument("-u","--users",dest='users',
                              default=None,
                              help="list of one or more user names "
@@ -107,6 +110,7 @@ def main(args=None):
                       exts=args.extensions,
                       users=users,
                       size=min_size,
+                      only_hidden=args.only_hidden,
                       nocompressed=args.nocompressed,
                       long_listing=args.long_listing,
                       full_paths=args.full_paths)

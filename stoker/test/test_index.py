@@ -222,6 +222,33 @@ class TestFilesystemObject(unittest.TestCase):
             FilesystemObject("missing.lnk").raw_symlink_target,
             "missing")
 
+    def test_ishidden(self):
+        # Make test filesystem objects
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertFalse(FilesystemObject("test.txt").ishidden)
+        with open(".hidden.txt","w") as fp:
+            fp.write("test")
+        self.assertTrue(FilesystemObject(".hidden.txt").ishidden)
+        # Directory
+        os.mkdir("test.dir")
+        self.assertFalse(FilesystemObject("test.dir").ishidden)
+        os.mkdir(".hidden.dir")
+        self.assertTrue(FilesystemObject(".hidden.dir").ishidden)
+        # Files in subdirs
+        with open("test.dir/test.txt","w") as fp:
+            fp.write("test")
+        self.assertFalse(FilesystemObject("test.dir/test.txt").ishidden)
+        with open("test.dir/.hidden.txt","w") as fp:
+            fp.write("test")
+        self.assertTrue(FilesystemObject("test.dir/.hidden.txt").ishidden)
+        with open(".hidden.dir/test.txt","w") as fp:
+            fp.write("test")
+        self.assertTrue(FilesystemObject(".hidden.dir/test.txt").ishidden)
+        with open(".hidden.dir/.hidden.txt","w") as fp:
+            fp.write("test")
+        self.assertTrue(FilesystemObject(".hidden.dir/.hidden.txt").ishidden)
+
     def test_isaccessible(self):
         # Make test filesystem objects
         with open("test.txt","w") as fp:
