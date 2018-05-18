@@ -655,7 +655,8 @@ class TestFindFunction(unittest.TestCase):
                  "analysis/trimming/PJB_R1.trimmed.fastq",
                  "analysis/trimming/PJB_R2.trimmed.fastq",
                  "analysis/mapping/PJB.trimmed.bam",
-                 "analysis/mapping/PJB.trimmed.sam")
+                 "analysis/mapping/PJB.trimmed.sam",
+                 "big_file")
         symlinks = {
             "analysis/fastqs/PJB_R1.fastq": "fastqs/PJB_S1_R1_001.fastq.gz",
             "analysis/fastqs/PJB_R2.fastq": "fastqs/PJB_S1_R2_001.fastq.gz"
@@ -665,6 +666,9 @@ class TestFindFunction(unittest.TestCase):
         for f in files:
             with open(os.path.join(dirn,f),"w") as fp:
                 fp.write("blah\n")
+        with open(os.path.join(dirn,"big_file"),"w") as fp:
+            for i in xrange(1,1000):
+                fp.write("BLAHBLAHBLAH\n")
         for s in symlinks:
             os.symlink(symlinks[s],os.path.join(dirn,s))
         return (dirs,files,symlinks)
@@ -742,3 +746,23 @@ class TestFindFunction(unittest.TestCase):
                           "analysis/trimming/PJB_R2.trimmed.fastq",
                           "fastqs/PJB_S1_R1_001.fastq.gz",
                           "fastqs/PJB_S1_R2_001.fastq.gz"])
+
+    def test_find_minimum_size(self):
+        # Make reference directory
+        os.mkdir("test")
+        self._populate_dir("test")
+        # Build index
+        indx = FilesystemObjectIndex("test")
+        # Find files owned by current user
+        current_username = getpass.getuser()
+        self.assertEqual(find(indx,exts="fastq",
+                              users=current_username),
+                         ["analysis/fastqs/PJB_R1.fastq",
+                          "analysis/fastqs/PJB_R2.fastq",
+                          "analysis/trimming/PJB_R1.trimmed.fastq",
+                          "analysis/trimming/PJB_R2.trimmed.fastq",
+                          "fastqs/PJB_S1_R1_001.fastq.gz",
+                          "fastqs/PJB_S1_R2_001.fastq.gz"])
+        # Find files larger than specified sizes
+        self.assertEqual(find(indx,size=100),["big_file",])
+        self.assertEqual(find(indx,size=1000000),[])

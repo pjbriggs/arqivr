@@ -40,6 +40,13 @@ def main(args=None):
                              "separated by commas; only include "
                              "objects which have one of the "
                              "listed extensions")
+    find_parser.add_argument("-s","--size",metavar='MINSIZE',
+                             dest='min_size',default=None,
+                             help="only include objects greater "
+                             "than or equal to MINSIZE; MINSIZE "
+                             "must be either: a number of bytes, "
+                             "or an integer followed by 'K' (1024 "
+                             "bytes), 'M' (1024K), or 'G' (1024M)")
     find_parser.add_argument("-u","--users",dest='users',
                              default=None,
                              help="list of one or more user names "
@@ -76,9 +83,25 @@ def main(args=None):
             users = getpass.getuser()
         else:
             users = args.users
+        if args.min_size:
+            min_size = args.min_size
+            try:
+                min_size = int(min_size)
+            except ValueError:
+                min_size,units = (int(min_size[:-1]),min_size[-1])
+                if units == 'G':
+                    min_size = min_size*1024*1024*1024
+                elif units == 'M':
+                    min_size = min_size*1024*1024
+                elif units == 'K':
+                    min_size = min_size*1024
+                else:
+                    raise Exception("%s: invalid size option" %
+                                    args.min_size)
         commands.find(args.dir,
                       exts=args.extensions,
                       users=users,
+                      size=min_size,
                       nocompressed=args.nocompressed,
                       full_paths=args.full_paths)
 
