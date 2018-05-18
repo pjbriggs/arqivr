@@ -51,7 +51,9 @@ def main(args=None):
                              "owned by the current user (overrides "
                              "--users)")
     find_parser.add_argument("--nocompressed",action='store_true',
-                             help="don't include compressed objects")
+                             help="don't include compressed objects "
+                             "(i.e. those with %s extensions)" %
+                             ', '.join(index.COMPRESSED_FILE_EXTENSIONS))
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
                              "objects")

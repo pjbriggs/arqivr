@@ -17,6 +17,7 @@ import grp
 
 # Constants
 MD5_BLOCK_SIZE = 1024*1024
+COMPRESSED_FILE_EXTENSIONS = ('gz','bz2')
 
 # File types
 class FilesystemObjectType(object):
@@ -156,7 +157,7 @@ class FilesystemObject(object):
 
     @property
     def iscompressed(self):
-        return (self.path.split('.')[-1] in ('gz','bz2'))
+        return (self.path.split('.')[-1] in COMPRESSED_FILE_EXTENSIONS)
 
 class FilesystemObjectIndex(object):
     """
