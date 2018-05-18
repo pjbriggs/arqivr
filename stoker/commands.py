@@ -79,7 +79,7 @@ def find(dirn,exts=None,users=None,size=None,nocompressed=False,
                         (" -> %s" % obj.raw_symlink_target)
                         if obj.islink else "")
         if long_listing:
-            output = "%s %s %s" % (obj.username,
-                                   _pretty_print_size(obj.size),
-                                   output)
+            output = "%s\t%s\t%s" % (obj.username,
+                                     _pretty_print_size(obj.size),
+                                     output)
         print output
