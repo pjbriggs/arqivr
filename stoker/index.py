@@ -145,6 +145,16 @@ class FilesystemObject(object):
         return '.'.join(os.path.basename(self.path).split('.')[1:])
 
     @property
+    def type_extension(self):
+        if self.iscompressed:
+            try:
+                return self.extension.split('.')[-2]
+            except IndexError:
+                return ""
+        else:
+            return self.extension.split('.')[-1]
+
+    @property
     def iscompressed(self):
         return (self.path.split('.')[-1] in ('gz','bz2'))
 
@@ -290,7 +300,7 @@ def find(indx,exts=None,users=None,nocompressed=False):
         for name in indx.names:
             obj = indx[name]
             for ext in exts:
-                if ext in obj.extension.split('.'):
+                if ext == obj.type_extension:
                     matches.append(name)
                     break
     else:
