@@ -13,6 +13,16 @@ def _print_list(l):
     for i in l:
         print "\t%s" % i
 
+def _pretty_print_size(s):
+    """
+    """
+    units = "bKMG"
+    i = 0
+    while s > 1024 and units[i] != 'G':
+        s = float(s)/1024.0
+        i += 1
+    return "%.1f%s" % (s,units[i])
+
 def compare(source,target):
     """
     """
@@ -52,7 +62,7 @@ def check_accessibility(dirn):
                                   name)
 
 def find(dirn,exts=None,users=None,size=None,nocompressed=False,
-         full_paths=False):
+         long_listing=False,full_paths=False):
     """
     """
     indx = index.FilesystemObjectIndex(dirn)
@@ -65,6 +75,11 @@ def find(dirn,exts=None,users=None,size=None,nocompressed=False,
             path = os.path.abspath(os.path.join(dirn,name))
         else:
             path = name
-        print "%s%s" % (path,
+        output = "%s%s" % (path,
                         (" -> %s" % obj.raw_symlink_target)
                         if obj.islink else "")
+        if long_listing:
+            output = "%s\t%s\t%s" % (obj.username,
+                                     _pretty_print_size(obj.size),
+                                     output)
+        print output

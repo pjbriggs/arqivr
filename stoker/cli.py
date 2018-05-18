@@ -61,6 +61,11 @@ def main(args=None):
                              help="don't include compressed objects "
                              "(i.e. those with %s extensions)" %
                              ', '.join(index.COMPRESSED_FILE_EXTENSIONS))
+    find_parser.add_argument("-l",action='store_true',
+                             dest="long_listing",
+                             help="use a long listing format when "
+                             "reporting results (includes user and "
+                             "size)")
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
                              "objects")
@@ -83,8 +88,8 @@ def main(args=None):
             users = getpass.getuser()
         else:
             users = args.users
-        if args.min_size:
-            min_size = args.min_size
+        min_size = args.min_size
+        if min_size:
             try:
                 min_size = int(min_size)
             except ValueError:
@@ -103,6 +108,7 @@ def main(args=None):
                       users=users,
                       size=min_size,
                       nocompressed=args.nocompressed,
+                      long_listing=args.long_listing,
                       full_paths=args.full_paths)
 
 
