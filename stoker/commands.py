@@ -13,6 +13,16 @@ def _print_list(l):
     for i in l:
         print "\t%s" % i
 
+def _pretty_print_size(s):
+    """
+    """
+    units = "bKMG"
+    i = 0
+    while s > 1024 and units[i] != 'G':
+        s = float(s)/1024.0
+        i += 1
+    return "%.1f%s" % (s,units[i])
+
 def compare(source,target):
     """
     """
@@ -70,6 +80,6 @@ def find(dirn,exts=None,users=None,size=None,nocompressed=False,
                         if obj.islink else "")
         if long_listing:
             output = "%s %s %s" % (obj.username,
-                                   obj.size,
+                                   _pretty_print_size(obj.size),
                                    output)
         print output
