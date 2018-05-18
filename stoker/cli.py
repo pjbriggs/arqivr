@@ -83,8 +83,8 @@ def main(args=None):
             users = getpass.getuser()
         else:
             users = args.users
-        if args.min_size:
-            min_size = args.min_size
+        min_size = args.min_size
+        if min_size:
             try:
                 min_size = int(min_size)
             except ValueError:
