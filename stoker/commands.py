@@ -23,6 +23,26 @@ def _pretty_print_size(s):
         i += 1
     return "%.1f%s" % (s,units[i])
 
+def _summarise_find(names,indx):
+    """
+    """
+    if not len(names):
+        return
+    total_size = 0
+    user_sizes = dict()
+    for name in names:
+        obj = indx[name]
+        size = obj.size
+        try:
+            user_sizes[obj.username] += size
+        except KeyError:
+            user_sizes[obj.username] = size
+        total_size += size
+    for user in user_sizes:
+        print "# %s:\t%s" % (user,
+                             _pretty_print_size(user_sizes[user]))
+    print "# Total:\t%s" % _pretty_print_size(total_size)
+
 def compare(source,target):
     """
     """
@@ -84,3 +104,5 @@ def find(dirn,exts=None,users=None,size=None,nocompressed=False,
                                      _pretty_print_size(obj.size),
                                      output)
         print output
+    if long_listing:
+        _summarise_find(matches,indx)

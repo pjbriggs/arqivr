@@ -68,7 +68,8 @@ def main(args=None):
                              dest="long_listing",
                              help="use a long listing format when "
                              "reporting results (includes user and "
-                             "size)")
+                             "size for each file plus a summary for "
+                             "each user and in total)")
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
                              "objects")
