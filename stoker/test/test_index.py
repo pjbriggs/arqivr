@@ -476,6 +476,7 @@ class TestCompareFunction(unittest.TestCase):
         os.mkdir("test1")
         self._populate_dir("test1")
         # Make directory to compare
+        time.sleep(.01)
         self._copy_dir("test1","test2")
         # Remove a file (missing)
         os.remove("test2/test.txt")
@@ -507,6 +508,7 @@ class TestCompareFunction(unittest.TestCase):
         os.mkdir("test1")
         self._populate_dir("test1")
         # Make directory to compare
+        time.sleep(0.01)
         self._copy_dir("test1","test2")
         # Change a file to a directory
         os.remove("test2/test.txt")
