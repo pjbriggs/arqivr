@@ -60,6 +60,9 @@ def main(args=None):
                              help="only include objects which are "
                              "owned by the current user (overrides "
                              "--users)")
+    find_parser.add_argument("--nosymlinks",action='store_true',
+                             help="don't include objects which are "
+                             "symlinks")
     find_parser.add_argument("--nocompressed",action='store_true',
                              help="don't include compressed objects "
                              "(i.e. those with %s extensions)" %
@@ -113,6 +116,7 @@ def main(args=None):
                       size=min_size,
                       only_hidden=args.only_hidden,
                       nocompressed=args.nocompressed,
+                      nosymlinks=args.nosymlinks,
                       long_listing=args.long_listing,
                       full_paths=args.full_paths)
 

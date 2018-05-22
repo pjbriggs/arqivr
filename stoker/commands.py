@@ -82,12 +82,14 @@ def check_accessibility(dirn):
                                   name)
 
 def find(dirn,exts=None,users=None,size=None,nocompressed=False,
-         only_hidden=False,long_listing=False,full_paths=False):
+         nosymlinks=False,only_hidden=False,long_listing=False,
+         full_paths=False):
     """
     """
     indx = index.FilesystemObjectIndex(dirn)
     matches = index.find(indx,exts=exts,users=users,
                          size=size,nocompressed=nocompressed,
+                         nosymlinks=nosymlinks,
                          only_hidden=only_hidden)
     print "%d matching objects" % len(matches)
     for name in matches:
