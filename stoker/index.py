@@ -297,7 +297,7 @@ def check_accessibility(indx):
     return inaccessible
 
 def find(indx,exts=None,users=None,size=None,only_hidden=False,
-         nocompressed=False):
+         nosymlinks=False,nocompressed=False):
     """
     Find matching objects in an ObjectIndex
     """
@@ -326,6 +326,9 @@ def find(indx,exts=None,users=None,size=None,only_hidden=False,
                          matches)
     if only_hidden:
         matches = filter(lambda x: indx[x].ishidden,
+                         matches)
+    if nosymlinks:
+        matches = filter(lambda x: not indx[x].islink,
                          matches)
     if nocompressed:
         matches = filter(lambda x: not indx[x].iscompressed,
