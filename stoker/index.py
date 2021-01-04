@@ -128,9 +128,12 @@ class FilesystemObject(object):
     @property
     def md5sum(self):
         chksum = hashlib.md5()
-        with open(self.path,'rb') as f:
-            for block in iter(lambda: f.read(MD5_BLOCK_SIZE),''):
-                chksum.update(block)
+        with open(self.path,"rb",buffering=MD5_BLOCK_SIZE) as fp:
+            for block in iter(fp.read,''):
+                if block:
+                    chksum.update(block)
+                else:
+                    break
         return chksum.hexdigest()
 
     @property
