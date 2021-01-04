@@ -5,7 +5,7 @@
 #
 
 import os
-import index
+from . import index
 
 def _print_list(l):
     """

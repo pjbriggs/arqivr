@@ -5,8 +5,8 @@
 #
 import argparse
 import getpass
-import commands
-import index
+from . import commands
+from . import index
 
 def main(args=None):
     
