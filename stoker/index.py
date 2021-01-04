@@ -198,13 +198,13 @@ class FilesystemObjectIndex(object):
         """
         Build index from filesystem
         """
-        print "Indexing objects in %s" % self._dirn
+        print("Indexing objects in %s" % self._dirn)
         for d in os.walk(self._dirn):
             for f in d[1]:
                 self._add_object(d[0],f)
             for f in d[2]:
                 self._add_object(d[0],f)
-        print "Added %d objects" % len(self)
+        print("Added %d objects" % len(self))
 
     def _add_object(self,*args):
         """

@@ -79,7 +79,7 @@ def main(args=None):
     
     # Process the command line
     args = parser.parse_args()
-    print "Command: %s" % args.command
+    print("Command: %s" % args.command)
 
     # Compare
     if args.command == "compare":
