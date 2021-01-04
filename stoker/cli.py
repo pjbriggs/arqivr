@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #     cli.py: command line interfaces
-#     Copyright (C) University of Manchester 2018 Peter Briggs
+#     Copyright (C) University of Manchester 2018-2021 Peter Briggs
 #
 import argparse
 import getpass

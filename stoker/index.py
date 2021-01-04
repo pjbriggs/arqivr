@@ -1,7 +1,7 @@
-#!/bin/env python
+#!/usr/bin/env python3
 #
 #     index.py: indexing classes and functions
-#     Copyright (C) University of Manchester 2018 Peter Briggs
+#     Copyright (C) University of Manchester 2018-2021 Peter Briggs
 #
 
 """

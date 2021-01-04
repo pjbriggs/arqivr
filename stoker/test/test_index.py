@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python3
 #
 # Unit tests for the stoker index module
 import unittest
