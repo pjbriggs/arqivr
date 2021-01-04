@@ -22,10 +22,10 @@ from stoker.index import find
 def _remove_dir(dirn):
     for root,dirs,files in os.walk(dirn):
         for name in dirs:
-            os.chmod(os.path.join(root,name),0755)
+            os.chmod(os.path.join(root,name),0o755)
         for name in files:
             try:
-                os.chmod(os.path.join(root,name),0644)
+                os.chmod(os.path.join(root,name),0o644)
             except OSError:
                 pass
     shutil.rmtree(dirn)
@@ -264,10 +264,10 @@ class TestFilesystemObject(unittest.TestCase):
         os.symlink("missing","missing.lnk")
         self.assertTrue(FilesystemObject("missing.lnk").isaccessible)
         # Set permissions to make objects unreadable
-        os.chmod("test.txt",0044)
+        os.chmod("test.txt",0o044)
         self.assertFalse(FilesystemObject("test.txt").isaccessible)
         self.assertTrue(FilesystemObject("test.lnk").isaccessible)
-        os.chmod("test.dir",0055)
+        os.chmod("test.dir",0o055)
         self.assertFalse(FilesystemObject("test.dir").isaccessible)
 
     def test_md5sum(self):
@@ -282,16 +282,16 @@ class TestFilesystemObject(unittest.TestCase):
         with open("test.txt","w") as fp:
             fp.write("test")
         # Set permissions and test outputs
-        os.chmod("test.txt",0444)
+        os.chmod("test.txt",0o444)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "r--r--r--")
-        os.chmod("test.txt",0666)
+        os.chmod("test.txt",0o666)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "rw-rw-rw-")
-        os.chmod("test.txt",0750)
+        os.chmod("test.txt",0o750)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "rwxr-x---")
-        os.chmod("test.txt",0070)
+        os.chmod("test.txt",0o070)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "---rwx---")
 
@@ -585,9 +585,9 @@ class TestCompareFunction(unittest.TestCase):
         # Make directory to compare
         self._copy_dir("test1","test2")
         # Remove permissions on source subdir (restricted_source)
-        os.chmod("test1/test1.dir",0055)
+        os.chmod("test1/test1.dir",0o055)
         # Remove permissions on target subdir (restricted_target)
-        os.chmod("test2/test2.dir",0055)
+        os.chmod("test2/test2.dir",0o055)
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
         indx2 = FilesystemObjectIndex("test2")
@@ -651,9 +651,9 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         os.mkdir("test")
         self._populate_dir("test")
         # Remove permissions on subdir
-        os.chmod("test/test1.dir",0055)
+        os.chmod("test/test1.dir",0o055)
         # Remove permissions on file
-        os.chmod("test/test2.dir/test.txt",0044)
+        os.chmod("test/test2.dir/test.txt",0o044)
         # Build index
         indx = FilesystemObjectIndex("test")
         self.assertEqual(check_accessibility(indx),
