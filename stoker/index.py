@@ -148,7 +148,10 @@ class FilesystemObject(object):
 
     @property
     def raw_symlink_target(self):
-        return os.readlink(self.path)
+        if self.exists:
+            return os.readlink(self.path)
+        else:
+            return None
 
     @property
     def ishidden(self):
@@ -159,6 +162,8 @@ class FilesystemObject(object):
 
     @property
     def isaccessible(self):
+        if not self.exists:
+            return False
         st_mode = self.stat.get("mode")
         if self.uid == os.getuid():
             return bool(st_mode & stat.S_IRUSR)
@@ -168,6 +173,8 @@ class FilesystemObject(object):
 
     @property
     def md5sum(self):
+        if not self.exists:
+            return None
         chksum = hashlib.md5()
         with open(self.path,"rb",buffering=MD5_BLOCK_SIZE) as fp:
             for block in iter(fp.read,''):
@@ -179,6 +186,8 @@ class FilesystemObject(object):
 
     @property
     def linux_permissions(self):
+        if not self.exists:
+            return None
         st_mode = self.stat.get("mode")
         perms = "%s%s%s%s%s%s%s%s%s" % \
                 (('r' if st_mode & stat.S_IRUSR else '-'),
