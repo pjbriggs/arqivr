@@ -96,6 +96,8 @@ class FilesystemObject(object):
     @property
     def username(self):
         uid = self.uid
+        if uid is None:
+            return None
         try:
             return pwd.getpwuid(int(uid)).pw_name
         except (KeyError,ValueError,OverflowError):
@@ -108,6 +110,8 @@ class FilesystemObject(object):
     @property
     def groupname(self):
         gid = self.gid
+        if gid is None:
+            return None
         try:
             return grp.getgrgid(int(gid)).gr_name
         except (KeyError,ValueError,OverflowError):
