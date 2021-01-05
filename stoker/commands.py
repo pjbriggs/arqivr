@@ -16,10 +16,11 @@ def _print_list(l):
 def _pretty_print_size(s):
     """
     """
-    units = "bKMG"
+    units = "bKMGTP"
+    size = 1024
     i = 0
-    while s > 1024 and units[i] != 'G':
-        s = float(s)/1024.0
+    while s > size and units[i] != units[-1]:
+        s = float(s)/float(size)
         i += 1
     return "%.1f%s" % (s,units[i])
 
