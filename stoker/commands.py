@@ -5,6 +5,7 @@
 #
 
 import os
+import collections
 from . import index
 
 def _print_list(l):
@@ -43,6 +44,30 @@ def _summarise_find(names,indx):
         print("# %s:\t%s" % (user,
                              _pretty_print_size(user_sizes[user])))
     print("# Total:\t%s" % _pretty_print_size(total_size))
+
+def _mount_points():
+    """
+    """
+    MountPoint = collections.namedtuple("MountPoint",
+                                        ('device',
+                                         'mount_point',))
+    mount_points = list()
+    with open("/proc/mounts") as fp:
+        for line in fp:
+            line = line.split()
+            mount_points.append(MountPoint(device=line[0],
+                                           mount_point=line[1]))
+    return mount_points
+
+def _get_mount_point(d):
+    """
+    """
+    d = os.path.abspath(d)
+    for m in sorted(_mount_points(),
+                    key=lambda p: len(p.mount_point),
+                    reverse=True):
+        if d.startswith(m.mount_point):
+            return m
 
 def compare(source,target):
     """
