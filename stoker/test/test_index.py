@@ -412,20 +412,17 @@ class TestFilesystemObject(unittest.TestCase):
         self.assertEqual(FilesystemObject("missing").username,None)
         self.assertEqual(FilesystemObject("missing").gid,None)
         self.assertEqual(FilesystemObject("missing").groupname,None)
-        self.assertEqual(FilesystemObject("missing").islink,None)
-        self.assertEqual(FilesystemObject("missing").isfile,None)
-        self.assertEqual(FilesystemObject("missing").isdir,None)
-        self.assertEqual(FilesystemObject("missing").iscompressed,None)
+        self.assertFalse(FilesystemObject("missing").islink)
+        self.assertFalse(FilesystemObject("missing").isfile)
+        self.assertFalse(FilesystemObject("missing").isdir)
+        self.assertFalse(FilesystemObject("missing").iscompressed)
         self.assertEqual(FilesystemObject("missing").type,
                          FilesystemObjectType.MISSING)
         self.assertEqual(FilesystemObject("missing").raw_symlink_target,
                          None)
-        self.assertEqual(FilesystemObject("missing").ishidden,
-                         None)
-        self.assertEqual(FilesystemObject("missing").isaccessible,
-                         None)
-        self.assertEqual(FilesystemObject("missing").md5sum,
-                         None)
+        self.assertFalse(FilesystemObject("missing").ishidden)
+        self.assertFalse(FilesystemObject("missing").isaccessible)
+        self.assertEqual(FilesystemObject("missing").md5sum,None)
         self.assertEqual(FilesystemObject("missing").linux_permissions,
                          None)
 
