@@ -76,10 +76,13 @@ class FilesystemObject(object):
         """
         self.path = os.path.abspath(path)
         self.stat = FilesystemObjectStat(self.path)
+        self._exists = None
 
     @property
     def exists(self):
-        return os.path.lexists(self.path)
+        if self._exists is None:
+            self._exists = os.path.lexists(self.path)
+        return self._exists
 
     @property
     def timestamp(self):
