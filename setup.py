@@ -24,8 +24,7 @@ SOLiD and Illumina sequencing platforms""",
                  },
     license = 'MIT',
     # Pull in dependencies
-    ##install_requires = ['genomics-bcftbx',
-    ##                    'auto_process_ngs'],
+    install_requires = ['psutil',],
     # Enable 'python setup.py test'
     test_suite='nose.collector',
     tests_require=['nose'],
