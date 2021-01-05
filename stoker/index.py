@@ -27,6 +27,46 @@ class FilesystemObjectType(object):
     MISSING = 3
     UNKNOWN = 4
 
+class FilesystemObjectStat(object):
+    """
+    Wrapper for result of os.lstat(...)
+
+    Create a new instance for a file or other filesystem
+    object, then use the 'get' method to fetch values for
+    different attributes.
+
+    The attribute names are the same as those provided by
+    the result of os.lstat, with the leading 'st_' removed,
+    e.g.
+
+    st_mtime (in os.lstat) -> mtime
+
+    Usage example:
+
+    >>> st = FilesystemObjectStat("test.txt")
+    >>> st.get("mtime")
+    1525350206.9344375
+
+    This is the equivalent of:
+
+    >>> os.lstat("test.txt").st_mtime
+    1525350206.9344375
+    """
+    def __init__(self,path):
+        try:
+            self._st = os.lstat(path)
+        except OSError:
+            self._st = None
+
+    def get(self,attr):
+        try:
+            return getattr(self._st,"st_%s" % attr)
+        except Exception as ex:
+            if self._st is None:
+                return None
+            else:
+                raise ex
+
 class FilesystemObject(object):
     """
     Store information about file system object
@@ -35,30 +75,32 @@ class FilesystemObject(object):
         """
         """
         self.path = os.path.abspath(path)
-        try:
-            self._st = os.lstat(self.path)
-        except OSError:
-            self._st = None
+        self.stat = FilesystemObjectStat(self.path)
+        self._exists = None
 
     @property
     def exists(self):
-        return os.path.lexists(self.path)
+        if self._exists is None:
+            self._exists = os.path.lexists(self.path)
+        return self._exists
 
     @property
     def timestamp(self):
-        return self._st.st_mtime
+        return self.stat.get("mtime")
 
     @property
     def size(self):
-        return self._st.st_size
+        return self.stat.get("size")
 
     @property
     def uid(self):
-        return self._st.st_uid
+        return self.stat.get("uid")
 
     @property
     def username(self):
         uid = self.uid
+        if uid is None:
+            return None
         try:
             return pwd.getpwuid(int(uid)).pw_name
         except (KeyError,ValueError,OverflowError):
@@ -66,11 +108,13 @@ class FilesystemObject(object):
 
     @property
     def gid(self):
-        return self._st.st_gid
+        return self.stat.get("gid")
 
     @property
     def groupname(self):
         gid = self.gid
+        if gid is None:
+            return None
         try:
             return grp.getgrgid(int(gid)).gr_name
         except (KeyError,ValueError,OverflowError):
@@ -107,7 +151,10 @@ class FilesystemObject(object):
 
     @property
     def raw_symlink_target(self):
-        return os.readlink(self.path)
+        if self.exists:
+            return os.readlink(self.path)
+        else:
+            return None
 
     @property
     def ishidden(self):
@@ -118,7 +165,9 @@ class FilesystemObject(object):
 
     @property
     def isaccessible(self):
-        st_mode = self._st.st_mode
+        if not self.exists:
+            return False
+        st_mode = self.stat.get("mode")
         if self.uid == os.getuid():
             return bool(st_mode & stat.S_IRUSR)
         if self.gid in os.getgroups():
@@ -127,6 +176,8 @@ class FilesystemObject(object):
 
     @property
     def md5sum(self):
+        if not self.exists:
+            return None
         chksum = hashlib.md5()
         with open(self.path,"rb",buffering=MD5_BLOCK_SIZE) as fp:
             for block in iter(fp.read,''):
@@ -138,7 +189,9 @@ class FilesystemObject(object):
 
     @property
     def linux_permissions(self):
-        st_mode = self._st.st_mode
+        if not self.exists:
+            return None
+        st_mode = self.stat.get("mode")
         perms = "%s%s%s%s%s%s%s%s%s" % \
                 (('r' if st_mode & stat.S_IRUSR else '-'),
                  ('w' if st_mode & stat.S_IWUSR else '-'),
@@ -295,8 +348,12 @@ def check_accessibility(indx):
     inaccessible = []
     for name in indx.names:
         obj = indx[name]
-        if not obj.isaccessible:
-            inaccessible.append(name)
+        try:
+            if obj.isaccessible:
+                continue
+        except AttributeError:
+            pass
+        inaccessible.append(name)
     return inaccessible
 
 def find(indx,exts=None,users=None,size=None,only_hidden=False,

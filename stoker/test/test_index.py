@@ -11,6 +11,7 @@ import grp
 import gzip
 import bz2
 from stoker.index import FilesystemObjectType
+from stoker.index import FilesystemObjectStat
 from stoker.index import FilesystemObject
 from stoker.index import FilesystemObjectIndex
 from stoker.index import compare
@@ -31,6 +32,70 @@ def _remove_dir(dirn):
     shutil.rmtree(dirn)
 #
 # Tests
+class TestFileSystemObjectStat(unittest.TestCase):
+    def setUp(self):
+        # Create a temp working dir
+        self.wd = tempfile.mkdtemp(suffix=self.__class__.__name__)
+        self.pwd = os.getcwd()
+        os.chdir(self.wd)
+
+    def tearDown(self):
+        os.chdir(self.pwd)
+        _remove_dir(self.wd)
+
+    def test_get_mtime(self):
+        # Get current time in seconds
+        timestamp = int(time.time())
+        # Make file with known timestamp
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        os.utime("test.txt",(timestamp,timestamp))
+        self.assertEqual(FilesystemObjectStat("test.txt").get("mtime"),
+                         timestamp)
+
+    def test_get_size(self):
+        # Make file
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObjectStat("test.txt").get("size"),4)
+
+    def test_get_uid(self):
+        # Get UID for current user
+        current_uid = os.getuid()
+        # Make file
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObjectStat("test.txt").get("uid"),
+                         current_uid)
+
+    def test_get_gid(self):
+        # Get GID for current user
+        current_gid = os.getgid()
+        # Make file
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObjectStat("test.txt").get("gid"),
+                         current_gid)
+
+    def test_get_mode(self):
+        # Make file
+        with open("test.txt","w") as fp:
+            fp.write("test")
+        self.assertEqual(FilesystemObjectStat("test.txt").get("mode"),
+                         os.lstat("test.txt").st_mode)
+
+    def test_non_existent_object(self):
+        self.assertEqual(FilesystemObjectStat("missing.txt").get("mtime"),
+                         None)
+        self.assertEqual(FilesystemObjectStat("missing.txt").get("size"),
+                         None)
+        self.assertEqual(FilesystemObjectStat("missing.txt").get("uid"),
+                         None)
+        self.assertEqual(FilesystemObjectStat("missing.txt").get("gid"),
+                         None)
+        self.assertEqual(FilesystemObjectStat("missing.txt").get("mode"),
+                         None)
+
 class TestFilesystemObject(unittest.TestCase):
     def setUp(self):
         # Create a temp working dir
@@ -338,6 +403,28 @@ class TestFilesystemObject(unittest.TestCase):
                          "1")
         self.assertEqual(FilesystemObject("test.gz").type_extension,"")
         self.assertEqual(FilesystemObject("test").type_extension,"")
+
+    def test_handle_non_existent_object(self):
+        self.assertFalse(FilesystemObject("missing").exists)
+        self.assertEqual(FilesystemObject("missing").timestamp,None)
+        self.assertEqual(FilesystemObject("missing").size,None)
+        self.assertEqual(FilesystemObject("missing").uid,None)
+        self.assertEqual(FilesystemObject("missing").username,None)
+        self.assertEqual(FilesystemObject("missing").gid,None)
+        self.assertEqual(FilesystemObject("missing").groupname,None)
+        self.assertFalse(FilesystemObject("missing").islink)
+        self.assertFalse(FilesystemObject("missing").isfile)
+        self.assertFalse(FilesystemObject("missing").isdir)
+        self.assertFalse(FilesystemObject("missing").iscompressed)
+        self.assertEqual(FilesystemObject("missing").type,
+                         FilesystemObjectType.MISSING)
+        self.assertEqual(FilesystemObject("missing").raw_symlink_target,
+                         None)
+        self.assertFalse(FilesystemObject("missing").ishidden)
+        self.assertFalse(FilesystemObject("missing").isaccessible)
+        self.assertEqual(FilesystemObject("missing").md5sum,None)
+        self.assertEqual(FilesystemObject("missing").linux_permissions,
+                         None)
 
 class TestFilesystemObjectIndex(unittest.TestCase):
     def setUp(self):
