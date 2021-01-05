@@ -2,7 +2,7 @@
 
 Setup script to install 'stoker' package
 
-Copyright (C) University of Manchester 2018 Peter Briggs
+Copyright (C) University of Manchester 2018-2021 Peter Briggs
 
 """
 

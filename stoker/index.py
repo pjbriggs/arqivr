@@ -1,7 +1,7 @@
-#!/bin/env python
+#!/usr/bin/env python3
 #
 #     index.py: indexing classes and functions
-#     Copyright (C) University of Manchester 2018 Peter Briggs
+#     Copyright (C) University of Manchester 2018-2021 Peter Briggs
 #
 
 """
@@ -128,9 +128,12 @@ class FilesystemObject(object):
     @property
     def md5sum(self):
         chksum = hashlib.md5()
-        with open(self.path,'rb') as f:
-            for block in iter(lambda: f.read(MD5_BLOCK_SIZE),''):
-                chksum.update(block)
+        with open(self.path,"rb",buffering=MD5_BLOCK_SIZE) as fp:
+            for block in iter(fp.read,''):
+                if block:
+                    chksum.update(block)
+                else:
+                    break
         return chksum.hexdigest()
 
     @property
@@ -198,13 +201,13 @@ class FilesystemObjectIndex(object):
         """
         Build index from filesystem
         """
-        print "Indexing objects in %s" % self._dirn
+        print("Indexing objects in %s" % self._dirn)
         for d in os.walk(self._dirn):
             for f in d[1]:
                 self._add_object(d[0],f)
             for f in d[2]:
                 self._add_object(d[0],f)
-        print "Added %d objects" % len(self)
+        print("Added %d objects" % len(self))
 
     def _add_object(self,*args):
         """

@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python3
 #
 # Unit tests for the stoker index module
 import unittest
@@ -22,10 +22,10 @@ from stoker.index import find
 def _remove_dir(dirn):
     for root,dirs,files in os.walk(dirn):
         for name in dirs:
-            os.chmod(os.path.join(root,name),0755)
+            os.chmod(os.path.join(root,name),0o755)
         for name in files:
             try:
-                os.chmod(os.path.join(root,name),0644)
+                os.chmod(os.path.join(root,name),0o644)
             except OSError:
                 pass
     shutil.rmtree(dirn)
@@ -56,7 +56,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Doesn't exist
         self.assertFalse(FilesystemObject("test").exists)
         # File that exists
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject("test.txt").exists)
         # Directory
@@ -73,7 +73,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Get current time in seconds
         timestamp = int(time.time())
         # Make file with known timestamp
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         os.utime("test.txt",(timestamp,timestamp))
         self.assertEqual(FilesystemObject("test.txt").timestamp,
@@ -81,7 +81,7 @@ class TestFilesystemObject(unittest.TestCase):
 
     def test_size(self):
         # Make file
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").size,4)
 
@@ -89,7 +89,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Get UID for current user
         current_uid = os.getuid()
         # Make file
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").uid,
                          current_uid)
@@ -98,7 +98,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Get username for current user
         current_username = getpass.getuser()
         # Make file
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").username,
                          current_username)
@@ -107,7 +107,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Get GID for current user
         current_gid = os.getgid()
         # Make file
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").gid,
                          current_gid)
@@ -116,7 +116,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Get group name for current user
         current_groupname = grp.getgrgid(os.getgid()).gr_name
         # Make file
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").groupname,
                          current_groupname)
@@ -125,7 +125,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Doesn't exist
         self.assertFalse(FilesystemObject("test").islink)
         # File that exists
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertFalse(FilesystemObject("test.txt").islink)
         # Directory
@@ -142,7 +142,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Doesn't exist
         self.assertFalse(FilesystemObject("test").isfile)
         # File that exists
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject("test.txt").isfile)
         # Directory
@@ -159,7 +159,7 @@ class TestFilesystemObject(unittest.TestCase):
         # Doesn't exist
         self.assertFalse(FilesystemObject("test").isdir)
         # File that exists
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertFalse(FilesystemObject("test.txt").isdir)
         # Directory
@@ -174,15 +174,15 @@ class TestFilesystemObject(unittest.TestCase):
 
     def test_iscompressed(self):
         # Uncompressed file
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("uncompressed")
         self.assertFalse(FilesystemObject("test.txt").iscompressed)
         # Gzipped file
-        with gzip.open("test.txt.gz","w") as fp:
+        with gzip.open("test.txt.gz","wt") as fp:
             fp.write("gzipped")
         self.assertTrue(FilesystemObject("test.txt.gz").iscompressed)
         # Bzipped2 file
-        with bz2.BZ2File("test.txt.bz2","w") as fp:
+        with bz2.open("test.txt.bz2","wt") as fp:
             fp.write("bzipped2")
         self.assertTrue(FilesystemObject("test.txt.bz2").iscompressed)
 
@@ -191,7 +191,7 @@ class TestFilesystemObject(unittest.TestCase):
         self.assertEqual(FilesystemObject("test").type,
                          FilesystemObjectType.MISSING)
         # File that exists
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").type,
                          FilesystemObjectType.FILE)
@@ -210,7 +210,7 @@ class TestFilesystemObject(unittest.TestCase):
 
     def test_raw_symlink_target(self):
         # Make file and symlink
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         os.symlink("test.txt","test.lnk")
         self.assertEqual(
@@ -224,10 +224,10 @@ class TestFilesystemObject(unittest.TestCase):
 
     def test_ishidden(self):
         # Make test filesystem objects
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertFalse(FilesystemObject("test.txt").ishidden)
-        with open(".hidden.txt","w") as fp:
+        with open(".hidden.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject(".hidden.txt").ishidden)
         # Directory
@@ -236,22 +236,22 @@ class TestFilesystemObject(unittest.TestCase):
         os.mkdir(".hidden.dir")
         self.assertTrue(FilesystemObject(".hidden.dir").ishidden)
         # Files in subdirs
-        with open("test.dir/test.txt","w") as fp:
+        with open("test.dir/test.txt","wt") as fp:
             fp.write("test")
         self.assertFalse(FilesystemObject("test.dir/test.txt").ishidden)
-        with open("test.dir/.hidden.txt","w") as fp:
+        with open("test.dir/.hidden.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject("test.dir/.hidden.txt").ishidden)
-        with open(".hidden.dir/test.txt","w") as fp:
+        with open(".hidden.dir/test.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject(".hidden.dir/test.txt").ishidden)
-        with open(".hidden.dir/.hidden.txt","w") as fp:
+        with open(".hidden.dir/.hidden.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject(".hidden.dir/.hidden.txt").ishidden)
 
     def test_isaccessible(self):
         # Make test filesystem objects
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertTrue(FilesystemObject("test.txt").isaccessible)
         # Directory
@@ -264,48 +264,48 @@ class TestFilesystemObject(unittest.TestCase):
         os.symlink("missing","missing.lnk")
         self.assertTrue(FilesystemObject("missing.lnk").isaccessible)
         # Set permissions to make objects unreadable
-        os.chmod("test.txt",0044)
+        os.chmod("test.txt",0o044)
         self.assertFalse(FilesystemObject("test.txt").isaccessible)
         self.assertTrue(FilesystemObject("test.lnk").isaccessible)
-        os.chmod("test.dir",0055)
+        os.chmod("test.dir",0o055)
         self.assertFalse(FilesystemObject("test.dir").isaccessible)
 
     def test_md5sum(self):
         # Make test filesystem objects
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         self.assertEqual(FilesystemObject("test.txt").md5sum,
                          "098f6bcd4621d373cade4e832627b4f6")
 
     def test_linux_permissions(self):
         # Make test filesystem object
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
         # Set permissions and test outputs
-        os.chmod("test.txt",0444)
+        os.chmod("test.txt",0o444)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "r--r--r--")
-        os.chmod("test.txt",0666)
+        os.chmod("test.txt",0o666)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "rw-rw-rw-")
-        os.chmod("test.txt",0750)
+        os.chmod("test.txt",0o750)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "rwxr-x---")
-        os.chmod("test.txt",0070)
+        os.chmod("test.txt",0o070)
         self.assertEqual(FilesystemObject("test.txt").linux_permissions,
                          "---rwx---")
 
     def test_extension(self):
         # Make test filesystem objects
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
-        with open("test.txt.gz","w") as fp:
+        with open("test.txt.gz","wt") as fp:
             fp.write("test")
-        with open("test.txt.filtered.gz.1","w") as fp:
+        with open("test.txt.filtered.gz.1","wt") as fp:
             fp.write("test")
-        with open("test.gz","w") as fp:
+        with open("test.gz","wt") as fp:
             fp.write("test")
-        with open("test","w") as fp:
+        with open("test","wt") as fp:
             fp.write("test")
         # Check extensions
         self.assertEqual(FilesystemObject("test.txt").extension,
@@ -319,15 +319,15 @@ class TestFilesystemObject(unittest.TestCase):
 
     def test_type_extension(self):
         # Make test filesystem objects
-        with open("test.txt","w") as fp:
+        with open("test.txt","wt") as fp:
             fp.write("test")
-        with open("test.txt.gz","w") as fp:
+        with open("test.txt.gz","wt") as fp:
             fp.write("test")
-        with open("test.txt.filtered.gz.1","w") as fp:
+        with open("test.txt.filtered.gz.1","wt") as fp:
             fp.write("test")
-        with open("test.gz","w") as fp:
+        with open("test.gz","wt") as fp:
             fp.write("test")
-        with open("test","w") as fp:
+        with open("test","wt") as fp:
             fp.write("test")
         # Check type extensions
         self.assertEqual(FilesystemObject("test.txt").type_extension,
@@ -368,7 +368,7 @@ class TestFilesystemObjectIndex(unittest.TestCase):
         for d in dirs:
             os.mkdir(d)
         for f in files:
-            with open(f,"w") as fp:
+            with open(f,"wt") as fp:
                 fp.write("test\n")
         for s in symlinks:
             os.symlink(symlinks[s],s)
@@ -426,7 +426,7 @@ class TestCompareFunction(unittest.TestCase):
         for d in dirs:
             os.mkdir(os.path.join(dirn,d))
         for f in files:
-            with open(os.path.join(dirn,f),"w") as fp:
+            with open(os.path.join(dirn,f),"wt") as fp:
                 fp.write("blah\n")
         for s in symlinks:
             os.symlink(symlinks[s],os.path.join(dirn,s))
@@ -481,11 +481,11 @@ class TestCompareFunction(unittest.TestCase):
         # Remove a file (missing)
         os.remove("test2/test.txt")
         # Add a new file (extra)
-        with open("test2/test2.dir/new.txt","w") as fp:
+        with open("test2/test2.dir/new.txt","wt") as fp:
             fp.write("blah")
         # Change content (changed_size/changed_md5/changed_time)
         time.sleep(.01)
-        with open("test2/test2.dir/test.txt","w") as fp:
+        with open("test2/test2.dir/test.txt","wt") as fp:
             fp.write("blah")
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
@@ -518,14 +518,14 @@ class TestCompareFunction(unittest.TestCase):
         os.symlink(".","test2/test2.dir/test.txt")
         # Change a directory to a file
         shutil.rmtree("test2/test1.dir")
-        with open("test2/test1.dir","w") as fp:
+        with open("test2/test1.dir","wt") as fp:
             fp.write("blah")
         # Change a directory to a link
         shutil.rmtree("test2/test3.dir")
         os.symlink(".","test2/test3.dir")
         # Change a link to a file
         os.remove("test2/test1.lnk")
-        with open("test2/test1.lnk","w") as fp:
+        with open("test2/test1.lnk","wt") as fp:
             fp.write("blah")
         # Change a link to a directory
         os.remove("test2/test2.lnk")
@@ -585,9 +585,9 @@ class TestCompareFunction(unittest.TestCase):
         # Make directory to compare
         self._copy_dir("test1","test2")
         # Remove permissions on source subdir (restricted_source)
-        os.chmod("test1/test1.dir",0055)
+        os.chmod("test1/test1.dir",0o055)
         # Remove permissions on target subdir (restricted_target)
-        os.chmod("test2/test2.dir",0055)
+        os.chmod("test2/test2.dir",0o055)
         # Build indexes
         indx1 = FilesystemObjectIndex("test1")
         indx2 = FilesystemObjectIndex("test2")
@@ -632,7 +632,7 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         for d in dirs:
             os.mkdir(os.path.join(dirn,d))
         for f in files:
-            with open(os.path.join(dirn,f),"w") as fp:
+            with open(os.path.join(dirn,f),"wt") as fp:
                 fp.write("blah\n")
         for s in symlinks:
             os.symlink(symlinks[s],os.path.join(dirn,s))
@@ -651,9 +651,9 @@ class TestCheckAccessibilityFunction(unittest.TestCase):
         os.mkdir("test")
         self._populate_dir("test")
         # Remove permissions on subdir
-        os.chmod("test/test1.dir",0055)
+        os.chmod("test/test1.dir",0o055)
         # Remove permissions on file
-        os.chmod("test/test2.dir/test.txt",0044)
+        os.chmod("test/test2.dir/test.txt",0o044)
         # Build index
         indx = FilesystemObjectIndex("test")
         self.assertEqual(check_accessibility(indx),
@@ -693,10 +693,10 @@ class TestFindFunction(unittest.TestCase):
         for d in dirs:
             os.mkdir(os.path.join(dirn,d))
         for f in files:
-            with open(os.path.join(dirn,f),"w") as fp:
+            with open(os.path.join(dirn,f),"wt") as fp:
                 fp.write("blah\n")
-        with open(os.path.join(dirn,"big_file"),"w") as fp:
-            for i in xrange(1,1000):
+        with open(os.path.join(dirn,"big_file"),"wt") as fp:
+            for i in range(1,1000):
                 fp.write("BLAHBLAHBLAH\n")
         for s in symlinks:
             os.symlink(symlinks[s],os.path.join(dirn,s))

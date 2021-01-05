@@ -1,12 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 #     cli.py: command line interfaces
-#     Copyright (C) University of Manchester 2018 Peter Briggs
+#     Copyright (C) University of Manchester 2018-2021 Peter Briggs
 #
 import argparse
 import getpass
-import commands
-import index
+from . import commands
+from . import index
 
 def main(args=None):
     
@@ -79,7 +79,7 @@ def main(args=None):
     
     # Process the command line
     args = parser.parse_args()
-    print "Command: %s" % args.command
+    print("Command: %s" % args.command)
 
     # Compare
     if args.command == "compare":
