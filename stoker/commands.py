@@ -134,3 +134,40 @@ def find(dirn,exts=None,users=None,size=None,nocompressed=False,
         print(output)
     if long_listing:
         _summarise_find(matches,indx)
+
+def stats(dirn):
+    """
+    """
+    mount_point = _get_mount_point(dirn)
+    usage = psutil.disk_usage(dirn)
+    du = 0
+    du_per_user = dict()
+    n_inaccessible = 0
+    indx = index.FilesystemObjectIndex(dirn)
+    for name in indx.names:
+        obj = indx[name]
+        obj_size = obj.size
+        obj_user = obj.username
+        if obj.isfile and not obj.islink:
+            du += obj_size
+            try:
+                du_per_user[obj_user] += obj_size
+            except KeyError:
+                du_per_user[obj_user] = obj_size
+        if not obj.isaccessible:
+            n_inaccessible +=1
+    print("Directory  : %s" % os.path.abspath(dirn))
+    print("Mount point: %s" % mount_point.mount_point)
+    print("Device     : %s" % mount_point.device)
+    print("Actual disk usage (device): %s/%s (%s%%)" %
+          (_pretty_print_size(usage.used),
+           _pretty_print_size(usage.total),
+           usage.percent))
+    print("Estimated disk usage (dir): %s (%s)" % (_pretty_print_size(du),du))
+    print("Per user:")
+    for user in du_per_user:
+        print("- %s: %s" % (user,
+                            _pretty_print_size(du_per_user[user])))
+    if n_inaccessible:
+        print("!!!! %d inaccessible files encountered !!!!" %
+              n_inaccessible)

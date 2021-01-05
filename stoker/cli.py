@@ -76,6 +76,12 @@ def main(args=None):
     find_parser.add_argument("-f","--full_paths",action='store_true',
                              help="report full paths to matching "
                              "objects")
+
+    # 'stats' command
+    stats_parser = subparsers.add_parser("stats",
+                                         help="get statistics")
+    stats_parser.add_argument("dir",default=None,
+                              help="directory to get stats for")
     
     # Process the command line
     args = parser.parse_args()
@@ -120,4 +126,7 @@ def main(args=None):
                       long_listing=args.long_listing,
                       full_paths=args.full_paths)
 
+    # Stats
+    if args.command == "stats":
+        commands.stats(args.dir)
 
