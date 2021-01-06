@@ -6,6 +6,7 @@
 
 import os
 import collections
+import psutil
 from . import index
 
 def _print_list(l):
